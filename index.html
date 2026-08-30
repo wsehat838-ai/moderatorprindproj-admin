@@ -177,7 +177,6 @@
             gap: 5px;
         }
 
-        /* DATA ITEM LINK AKTIF */
         .data-item {
             background: #090412;
             border: 1px solid var(--card-border);
@@ -197,8 +196,7 @@
         }
 
         .data-info strong {
-            font-size: 0.82rem;
-            color: #fff;
+            font-size: 0.8rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -212,15 +210,6 @@
             text-overflow: ellipsis;
         }
 
-        .data-info .upload-date {
-            font-size: 0.65rem;
-            color: var(--accent-blue);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            margin-top: 2px;
-        }
-
         .btn-del {
             background: rgba(255, 0, 85, 0.2);
             border: 1px solid #ff0055;
@@ -229,13 +218,6 @@
             border-radius: 8px;
             cursor: pointer;
             font-size: 0.75rem;
-            flex-shrink: 0;
-            transition: all 0.2s;
-        }
-
-        .btn-del:hover {
-            background: #ff0055;
-            color: #fff;
         }
 
         .yt-result {
@@ -360,26 +342,26 @@
                 <button class="btn-submit" onclick="sendLiveMessage()"><i class="fa-solid fa-bullhorn"></i> KIRIM POP-UP STREAM</button>
             </div>
 
-            <!-- TOOL 2: UPLOAD GAMBAR DENGAN DIRECT LINK -->
+            <!-- TOOL 2: CONVERT GAMBAR LANGSUNG KE DIRECT DATA URL -->
             <div class="card">
-                <div class="card-title"><i class="fa-solid fa-image"></i> Upload Gambar Ke Direct Link</div>
+                <div class="card-title"><i class="fa-solid fa-image"></i> Konversi Gambar Ke Direct URL</div>
                 <div class="input-group">
                     <label>Pilih Gambar dari Perangkat</label>
                     <input type="file" id="imgFileInput" accept="image/*" class="input-field">
                 </div>
-                <button class="btn-submit" id="btnUploadImg" onclick="uploadImageToImgBB()"><i class="fa-solid fa-cloud-arrow-up"></i> UPLOAD GAMBAR</button>
+                <button class="btn-submit" id="btnUploadImg" onclick="convertImageToDirectUrl()"><i class="fa-solid fa-bolt"></i> PROSES GAMBAR</button>
             </div>
 
             <div id="imgResultCard" class="card" style="display: none;">
-                <div class="card-title"><i class="fa-solid fa-check-circle"></i> Upload Berhasil!</div>
+                <div class="card-title"><i class="fa-solid fa-check-circle"></i> Direct URL Gambar Siap!</div>
                 <div class="yt-result">
                     <img id="uploadedImgPreview" class="yt-thumb" src="" alt="Preview">
                     <div class="input-group">
-                        <label>Direct Link Gambar:</label>
+                        <label>Direct URL Data Gambar:</label>
                         <input type="text" id="directLinkOutput" class="input-field" readonly>
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                        <button class="btn-secondary" onclick="copyText('directLinkOutput')"><i class="fa-solid fa-copy"></i> Salin Link</button>
+                        <button class="btn-secondary" onclick="copyText('directLinkOutput')"><i class="fa-solid fa-copy"></i> Salin URL</button>
                         <button class="btn-secondary" onclick="autoFillThumbnail()"><i class="fa-solid fa-arrow-right"></i> Ke Link Edit</button>
                     </div>
                 </div>
@@ -496,8 +478,8 @@
             });
         }
 
-        /* UPLOAD GAMBAR KE IMGBB (BEBAS ERROR API KEY & DIRECT LINK) */
-        async function uploadImageToImgBB() {
+        /* CONVERT GAMBAR LANGSUNG KE DATA URL (ANTI ERROR & BEBAS API EXTERNAL) */
+        function convertImageToDirectUrl() {
             const fileInput = document.getElementById('imgFileInput');
             const file = fileInput.files[0];
 
@@ -506,36 +488,15 @@
                 return;
             }
 
-            const btn = document.getElementById('btnUploadImg');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengunggah...';
-            btn.disabled = true;
-
-            const formData = new FormData();
-            formData.append('image', file);
-
-            try {
-                // Menggunakan API Public ImgBB
-                const res = await fetch('https://api.imgbb.com/1/upload?key=6d0541705607e0c42261904a08159b3a', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await res.json();
-
-                if (data.success) {
-                    const directUrl = data.data.url;
-                    document.getElementById('uploadedImgPreview').src = directUrl;
-                    document.getElementById('directLinkOutput').value = directUrl;
-                    document.getElementById('imgResultCard').style.display = 'flex';
-                    alert('Gambar berhasil diupload!');
-                } else {
-                    alert('Gagal mengunggah gambar, coba lagi!');
-                }
-            } catch (err) {
-                alert('Terjadi kesalahan koneksi saat upload!');
-            } finally {
-                btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> UPLOAD GAMBAR';
-                btn.disabled = false;
-            }
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const dataUrl = e.target.result;
+                document.getElementById('uploadedImgPreview').src = dataUrl;
+                document.getElementById('directLinkOutput').value = dataUrl;
+                document.getElementById('imgResultCard').style.display = 'flex';
+                alert('Gambar berhasil diproses ke Direct Data URL!');
+            };
+            reader.readAsDataURL(file);
         }
 
         function autoFillThumbnail() {
@@ -547,7 +508,7 @@
             alert('URL Gambar otomatis diisikan ke Form Link Edit!');
         }
 
-        /* FIREBASE LINK MANAGEMENT (TAMBAH + DELETER + TANGGAL UPLOAD) */
+        /* FIREBASE LINK MANAGEMENT */
         function addLink() {
             const title = document.getElementById('linkTitle').value.trim();
             const url = document.getElementById('linkUrl').value.trim();
@@ -558,20 +519,7 @@
                 return;
             }
 
-            // Format Tanggal Upload WIB (Contoh: 30 Aug 2026, 15:30 WIB)
-            const now = new Date();
-            const tglUpload = now.toLocaleDateString('id-ID', { 
-                day: 'numeric', 
-                month: 'short', 
-                year: 'numeric' 
-            }) + ', ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
-
-            db.ref('links').push({ 
-                title, 
-                url, 
-                img,
-                date: tglUpload 
-            }, (err) => {
+            db.ref('links').push({ title, url, img }, (err) => {
                 if (err) alert('Gagal menyimpan!');
                 else {
                     document.getElementById('linkTitle').value = '';
@@ -583,36 +531,28 @@
         }
 
         function deleteLink(key) {
-            if (confirm('Yakin ingin menghapus link ini dari Web Viewer?')) {
-                db.ref('links/' + key).remove((err) => {
-                    if(!err) alert('Link berhasil dihapus!');
-                });
+            if (confirm('Yakin ingin menghapus link ini?')) {
+                db.ref('links/' + key).remove();
             }
         }
 
-        // AMBIL DAFTAR LINK AKTIF REALTIME FROM FIREBASE
         db.ref('links').on('value', (snapshot) => {
             const list = document.getElementById('linkList');
             list.innerHTML = '';
             const data = snapshot.val();
-            
             if (!data) {
                 list.innerHTML = '<p style="font-size:0.75rem; color: var(--text-gray); text-align:center;">Belum ada link tersimpan.</p>';
                 return;
             }
-            
             for (let id in data) {
                 const item = data[id];
-                const dateText = item.date ? item.date : 'Tanggal tidak tersedia';
-
                 list.innerHTML += `
                     <div class="data-item">
                         <div class="data-info">
                             <strong>${item.title}</strong>
                             <span>${item.url}</span>
-                            <div class="upload-date"><i class="fa-regular fa-calendar-check"></i> Up: ${dateText}</div>
                         </div>
-                        <button class="btn-del" onclick="deleteLink('${id}')" title="Hapus Link"><i class="fa-solid fa-trash"></i></button>
+                        <button class="btn-del" onclick="deleteLink('${id}')"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 `;
             }
