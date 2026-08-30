@@ -40,10 +40,8 @@
         button.btn-blue { background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); border: none; font-weight: 700; cursor: pointer; font-family: 'Orbitron', sans-serif; }
 
         .chat-box-admin { height: 220px; background: #0d061a; border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
-        .chat-msg { font-size: 0.78rem; background: rgba(255, 255, 255, 0.03); padding: 8px 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-        .chat-msg-content { display: flex; flex-direction: column; gap: 2px; overflow: hidden; word-break: break-word; }
-        .btn-del-chat { background: rgba(255, 0, 85, 0.2); border: 1px solid #ff0055; color: #ff0055; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; flex-shrink: 0; }
-        .btn-del-chat:hover { background: #ff0055; color: #fff; }
+        .chat-msg { font-size: 0.78rem; background: rgba(255, 255, 255, 0.03); padding: 8px 10px; border-radius: 6px; display: flex; align-items: center; gap: 8px; overflow: hidden; }
+        .chat-msg span { word-break: break-word; }
 
         .rating-summary-box { background: #0d061a; border-radius: 10px; padding: 12px; border: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; }
         .avg-rating { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; font-weight: 900; color: #ffb700; display: flex; align-items: center; gap: 6px; }
@@ -120,7 +118,7 @@
 
         </div>
 
-        <!-- TAB 3: LIVE CHAT VIEWER MONITORING & HAPUS PESAN -->
+        <!-- TAB 3: LIVE CHAT VIEWER MONITORING -->
         <div id="liveChatTab" class="admin-section">
             <div class="section-header"><i class="fa-solid fa-comments" style="color: var(--accent-blue);"></i> MONITOR LIVE CHAT VIEWER</div>
             <div class="chat-box-admin" id="adminChatBox"></div>
@@ -279,7 +277,7 @@
             alert('Judul, Thumbnail, dan Link Video berhasil ditempel ke menu Vault!');
         }
 
-        // MONITOR LIVE CHAT VIEWER & FITUR HAPUS PESAN SPESIFIK
+        // MONITOR LIVE CHAT VIEWER BERSIH TANPA TOMBOL
         db.ref('chatMessages').limitToLast(50).on('value', (snapshot) => {
             const adminBox = document.getElementById('adminChatBox');
             adminBox.innerHTML = '';
@@ -289,29 +287,14 @@
                     const msg = messages[key];
                     adminBox.innerHTML += `
                         <div class="chat-msg">
-                            <div class="chat-msg-content">
-                                <strong style="color: var(--accent-pink);">${escapeHtml(msg.user)}:</strong> 
-                                <span>${escapeHtml(msg.text)}</span>
-                            </div>
-                            <button class="btn-del-chat" onclick="deleteChatMessage('${key}')" title="Hapus Pesan"><i class="fa-solid fa-trash"></i></button>
+                            <strong style="color: var(--accent-pink); white-space: nowrap;">${escapeHtml(msg.user)}:</strong> 
+                            <span>${escapeHtml(msg.text)}</span>
                         </div>
                     `;
                 }
                 adminBox.scrollTop = adminBox.scrollHeight;
             }
         });
-
-        function deleteChatMessage(messageKey) {
-            if (confirm('Yakin ingin menghapus pesan ini dari chat viewer?')) {
-                db.ref('chatMessages/' + messageKey).remove((err) => {
-                    if (err) {
-                        alert('Gagal menghapus pesan!');
-                    } else {
-                        alert('Pesan berhasil dihapus!');
-                    }
-                });
-            }
-        }
 
         function sendAdminBroadcast() {
             const msg = document.getElementById('adminBroadcastInput').value.trim();
