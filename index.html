@@ -178,8 +178,8 @@
 
             <hr style="border-color: var(--card-border); margin: 8px 0;">
 
-            <!-- TOOL 4: CARI MUSIK & PLAYER DIRECT -->
-            <div class="section-header"><div class="section-header-left"><i class="fa-solid fa-circle-play" style="color: #00ff88;"></i> CARI MUSIK & PLAYER DIRECT</div></div>
+            <!-- TOOL 4: CARI MUSIK & LINK YOUTUBE -->
+            <div class="section-header"><div class="section-header-left"><i class="fa-solid fa-circle-play" style="color: #00ff88;"></i> CARI MUSIK & DAPATKAN LINK YT</div></div>
             <input type="text" id="musicSearchInput" placeholder="Ketik nama lagu / artis..." onkeypress="handleMusicSearchEnter(event)">
             <button class="btn-primary" style="background: linear-gradient(45deg, #00ff88, var(--accent-blue)); color: #000;" onclick="searchMusic()"><i class="fa-solid fa-magnifying-glass"></i> CARI LAGU</button>
 
@@ -575,7 +575,7 @@
             });
         }
 
-        // TOOL 4: CARI MUSIK (DEEZER API + DIRECT DOWNLOAD)
+        // TOOL 4: CARI MUSIK & LINK YOUTUBE
         function handleMusicSearchEnter(e) {
             if(e.key === 'Enter') searchMusic();
         }
@@ -603,6 +603,7 @@
                     const title = `${item.title} - ${item.artist.name}`;
                     const thumb = item.album.cover_medium;
                     const previewAudio = item.preview;
+                    const ytSearchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(title)}`;
 
                     resultsContainer.innerHTML += `
                         <div class="music-item">
@@ -617,8 +618,11 @@
                             </audio>
 
                             <div class="btn-group" style="margin-top:6px;">
-                                <button class="btn-primary" style="font-size:0.7rem; padding:8px; background: linear-gradient(45deg, #00ff88, var(--accent-blue)); color:#000;" onclick="downloadDirectSong('${escapeHtml(item.title)} ${escapeHtml(item.artist.name)}')">
-                                    <i class="fa-solid fa-download"></i> Unduh MP3 Direct
+                                <button class="btn-secondary" style="font-size:0.7rem; padding:8px; border-color:#ff0055; color:#ff0055;" onclick="copyYoutubeSearchLink('${escapeHtml(title)}')">
+                                    <i class="fa-brands fa-youtube"></i> Salin Link YT
+                                </button>
+                                <button class="btn-blue" style="font-size:0.7rem; padding:8px;" onclick="applyToConverter('${escapeHtml(title)}')">
+                                    <i class="fa-solid fa-arrows-rotate"></i> Tempel ke Konverter
                                 </button>
                             </div>
                         </div>
@@ -630,32 +634,20 @@
             });
         }
 
-        function downloadDirectSong(searchTerm) {
-            const serviceUrl = `https://co.wuk.sh/api/json`;
-            
-            fetch(serviceUrl, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    url: `https://www.youtube.com/results?search_query=${encodeURIComponent(searchTerm)}`,
-                    isAudioOnly: true,
-                    aFormat: 'mp3'
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data && data.url) {
-                    window.location.href = data.url;
-                } else {
-                    window.location.href = `https://api.cobalt.tools/api/json?url=https://www.youtube.com/results?search_query=${encodeURIComponent(searchTerm)}`;
-                }
-            })
-            .catch(() => {
-                alert("Gagal mengunduh audio otomatis. Coba lagi sekali lagi bre.");
+        function copyYoutubeSearchLink(title) {
+            const ytLink = `https://www.youtube.com/results?search_query=${encodeURIComponent(title)}`;
+            navigator.clipboard.writeText(ytLink).then(() => {
+                alert(`Link YouTube untuk "${title}" berhasil disalin!`);
+            }).catch(() => {
+                prompt("Salin link YouTube ini manual bre:", ytLink);
             });
+        }
+
+        function applyToConverter(title) {
+            const ytLink = `https://www.youtube.com/results?search_query=${encodeURIComponent(title)}`;
+            document.getElementById('convertUrlInput').value = ytLink;
+            document.getElementById('convertUrlInput').scrollIntoView({ behavior: 'smooth' });
+            alert(`Link YT "${title}" berhasil ditempel ke Konverter di atas! Silakan klik PROSES KONVERSI.`);
         }
 
         db.ref('chatMessages').limitToLast(50).on('value', (snapshot) => {
