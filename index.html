@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>PRINDAPAN GAMES - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { background: #0a0512; color: #fff; font-family: 'Poppins', sans-serif; padding: 20px; }
+        h1 { font-family: 'Orbitron', sans-serif; color: #ff0055; text-shadow: 0 0 10px #ff0055; }
+        .form-box { background: #130a21; padding: 20px; border: 2px solid #ff0055; border-radius: 10px; max-width: 500px; margin-bottom: 30px; }
+        input { width: 100%; padding: 10px; margin: 8px 0; background: #0a0512; border: 1px solid #9d00ff; color: #fff; border-radius: 5px; box-sizing: border-box; }
+        button { background: #ff0055; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; }
+        table { width: 100%; border-collapse: collapse; background: #130a21; border-radius: 10px; overflow: hidden; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #9d00ff; }
+        th { background: #1a0f2e; color: #9d00ff; font-family: 'Orbitron', sans-serif; }
+        .btn-del { background: #ff3333; width: auto; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>ADMIN PANEL - PRINDAPAN GAMES</h1>
+    <div class="form-box">
+        <h3>Tambah Link Game Baru</h3>
+        <input type="text" id="title" placeholder="Nama Game / Script">
+        <input type="text" id="url" placeholder="URL Download / Link Data">
+        <input type="text" id="img" placeholder="URL Gambar Thumbnail">
+        <button onclick="addLink()">SIMPAN DATA</button>
+    </div>
+
+    <h3>Daftar Link Aktif</h3>
+    <table>
+        <thead>
+            <tr><th>Judul</th><th>Link</th><th>Aksi</th></tr>
+        </thead>
+        <tbody id="adminTable"></tbody>
+    </table>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDSftuyANybsSrzM7M8mvLJrd8-HhEn1BU",
+            authDomain: "prindapan-games.firebaseapp.com",
+            databaseURL: "https://prindapan-games-default-rtdb.firebaseio.com",
+            projectId: "prindapan-games",
+            storageBucket: "prindapan-games.firebasestorage.app",
+            messagingSenderId: "280001797119",
+            appId: "1:280001797119:web:35a8d16371faf98b4c65ca",
+            measurementId: "G-863VM2SE3W"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        function addLink() {
+            const title = document.getElementById('title').value;
+            const url = document.getElementById('url').value;
+            const img = document.getElementById('img').value;
+
+            if(!title || !url) return alert('Isi Judul dan Link!');
+
+            db.ref('links').push({ title, url, img });
+            document.getElementById('title').value = '';
+            document.getElementById('url').value = '';
+            document.getElementById('img').value = '';
+        }
+
+        function deleteLink(id) {
+            db.ref('links/' + id).remove();
+        }
+
+        db.ref('links').on('value', (snapshot) => {
+            const table = document.getElementById('adminTable');
+            table.innerHTML = '';
+            const data = snapshot.val();
+            for (let id in data) {
+                const item = data[id];
+                table.innerHTML += `
+                    <tr>
+                        <td>${item.title}</td>
+                        <td><a href="${item.url}" target="_blank" style="color:#9d00ff;">${item.url}</a></td>
+                        <td><button class="btn-del" onclick="deleteLink('${id}')">Hapus</button></td>
+                    </tr>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
