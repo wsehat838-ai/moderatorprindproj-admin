@@ -25,7 +25,6 @@
         .header-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 15px; display: flex; align-items: center; justify-content: space-between; }
         .header-title { font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--accent-pink); font-weight: 800; }
 
-        /* TAB NAVIGATION SCROLLABLE */
         .admin-nav { display: flex; gap: 6px; background: #0d061a; border-radius: 12px; padding: 5px; border: 1px solid var(--card-border); overflow-x: auto; scrollbar-width: none; }
         .admin-nav::-webkit-scrollbar { display: none; }
         .admin-nav-btn { flex: 0 0 auto; min-width: 80px; padding: 10px 12px; border: none; background: transparent; color: var(--text-gray); font-size: 0.72rem; font-weight: 700; border-radius: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: 0.3s; white-space: nowrap; }
@@ -37,7 +36,6 @@
         .section-header { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; font-weight: 800; color: #fff; display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
         .section-header-left { display: flex; align-items: center; gap: 8px; }
 
-        /* ONLINE INDICATOR BADGE */
         .online-indicator { font-size: 0.72rem; font-family: 'Poppins', sans-serif; font-weight: 600; color: #00ff66; background: rgba(0, 255, 102, 0.1); border: 1px solid rgba(0, 255, 102, 0.3); padding: 2px 8px; border-radius: 20px; display: flex; align-items: center; gap: 5px; }
         .online-dot { width: 7px; height: 7px; background-color: #00ff66; border-radius: 50%; box-shadow: 0 0 6px #00ff66; animation: pulse-dot 1.5s infinite; }
         @keyframes pulse-dot { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
@@ -47,7 +45,6 @@
         button.btn-secondary { background: #1a0c33; border: 1px solid var(--accent-purple); color: #fff; font-weight: 600; cursor: pointer; }
         button.btn-blue { background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); border: none; font-weight: 700; cursor: pointer; font-family: 'Orbitron', sans-serif; }
 
-        /* VAULT MANAGED LIST */
         .vault-list-box { max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 5px; }
         .vault-item { background: #0d061a; border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
         .vault-item-info { display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
@@ -75,7 +72,6 @@
         .output-box { display: none; background: #0d061a; border: 1px solid var(--accent-purple); border-radius: 10px; padding: 12px; font-size: 0.78rem; gap: 8px; flex-direction: column; margin-top: 5px; }
         .btn-group { display: flex; gap: 6px; margin-top: 5px; }
 
-        /* STYLING KHUSUS TAB CONTROL */
         .control-card { background: #0d061a; border: 1px solid var(--card-border); padding: 12px; border-radius: 10px; display: flex; flex-direction: column; gap: 8px; }
         .color-picker-box { display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.03); padding: 8px; border-radius: 8px; border: 1px solid var(--card-border); }
         .color-picker-box input[type="color"] { width: 45px; height: 35px; padding: 0; border: none; cursor: pointer; background: transparent; border-radius: 5px; }
@@ -83,12 +79,11 @@
         .status-badge.open { background: rgba(0, 255, 102, 0.15); color: #00ff66; border: 1px solid #00ff66; }
         .status-badge.closed { background: rgba(255, 0, 85, 0.15); color: #ff0055; border: 1px solid #ff0055; }
 
-        /* STYLING MUSIK SEARCH & PLAYER */
         .music-item { background: #0d061a; border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
         .music-item-header { display: flex; gap: 10px; align-items: center; }
         .music-item-img { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; }
         .music-item-title { font-size: 0.8rem; font-weight: 700; color: #fff; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .music-player { width: 100%; height: 35px; border-radius: 6px; outline: none; margin-top: 2px; }
+        audio { width: 100%; height: 35px; border-radius: 6px; outline: none; margin-top: 2px; }
     </style>
 </head>
 <body>
@@ -99,7 +94,6 @@
             <div class="header-title"><i class="fa-solid fa-user-shield"></i> PRINDAPAN ADMIN</div>
         </div>
 
-        <!-- TAB NAVIGATION (5 TAB - BISA DI-SCROLL) -->
         <div class="admin-nav">
             <button class="admin-nav-btn active" onclick="showAdminTab('vaultTab', this)"><i class="fa-solid fa-folder"></i> Vault</button>
             <button class="admin-nav-btn" onclick="showAdminTab('toolsTab', this)"><i class="fa-solid fa-wrench"></i> Tools</button>
@@ -108,7 +102,7 @@
             <button class="admin-nav-btn" onclick="showAdminTab('controlTab', this)"><i class="fa-solid fa-sliders"></i> Control</button>
         </div>
 
-        <!-- TAB 1: VAULT CONTENT MANAGEMENT -->
+        <!-- TAB 1: VAULT -->
         <div id="vaultTab" class="admin-section active">
             <div class="section-header"><div class="section-header-left"><i class="fa-solid fa-plus-circle" style="color: var(--accent-pink);"></i> TAMBAH LINK BARU</div></div>
             <input type="text" id="linkTitle" placeholder="Judul File / Game">
@@ -122,7 +116,7 @@
             <div class="vault-list-box" id="vaultListBox"></div>
         </div>
 
-        <!-- TAB 2: TOOLS UTILITAS -->
+        <!-- TAB 2: TOOLS -->
         <div id="toolsTab" class="admin-section">
             
             <!-- TOOL 1: KONVERSI GAMBAR -->
@@ -141,7 +135,7 @@
 
             <hr style="border-color: var(--card-border); margin: 8px 0;">
 
-            <!-- TOOL 2: YOUTUBE DATA EXPORTER (THUMBNAIL FIXED + DOWNLOAD BUTTON) -->
+            <!-- TOOL 2: YOUTUBE DATA EXPORTER -->
             <div class="section-header"><div class="section-header-left"><i class="fa-brands fa-youtube" style="color: #ff0055;"></i> YOUTUBE DATA EXPORTER</div></div>
             <input type="text" id="ytUrlInput" placeholder="Tempelkan link video YouTube di sini...">
             <button class="btn-primary" onclick="extractYoutubeData()"><i class="fa-solid fa-magnifying-glass"></i> EKSTRAK DATA VIDEO</button>
@@ -168,7 +162,7 @@
 
             <hr style="border-color: var(--card-border); margin: 8px 0;">
 
-            <!-- TOOL 3: YOUTUBE TO MP3 / OPUS / MP4 CONVERTER -->
+            <!-- TOOL 3: CONVERTER MEDIA -->
             <div class="section-header"><div class="section-header-left"><i class="fa-solid fa-arrows-rotate" style="color: var(--accent-blue);"></i> KONVERSI VIDEO TO MP3 / OPUS / MP4</div></div>
             <input type="text" id="convertUrlInput" placeholder="Paste Link YouTube untuk Konversi...">
             <button class="btn-primary" onclick="processMediaConvert()"><i class="fa-solid fa-gear"></i> PROSES KONVERSI</button>
@@ -184,7 +178,7 @@
 
             <hr style="border-color: var(--card-border); margin: 8px 0;">
 
-            <!-- TOOL 4 (PALING BAWAH): SEARCH MUSIK & REALTIME PLAYER -->
+            <!-- TOOL 4: CARI MUSIK & PLAYER DIRECT -->
             <div class="section-header"><div class="section-header-left"><i class="fa-solid fa-circle-play" style="color: #00ff88;"></i> CARI MUSIK & PLAYER DIRECT</div></div>
             <input type="text" id="musicSearchInput" placeholder="Ketik nama lagu / artis..." onkeypress="handleMusicSearchEnter(event)">
             <button class="btn-primary" style="background: linear-gradient(45deg, #00ff88, var(--accent-blue)); color: #000;" onclick="searchMusic()"><i class="fa-solid fa-magnifying-glass"></i> CARI LAGU</button>
@@ -193,7 +187,7 @@
 
         </div>
 
-        <!-- TAB 3: LIVE CHAT VIEWER MONITORING -->
+        <!-- TAB 3: LIVE CHAT -->
         <div id="liveChatTab" class="admin-section">
             <div class="section-header">
                 <div class="section-header-left">
@@ -212,7 +206,7 @@
             </div>
         </div>
 
-        <!-- TAB 4: INFO & REPUTASI RATING -->
+        <!-- TAB 4: RATING -->
         <div id="infoAdminTab" class="admin-section">
             <div class="section-header"><div class="section-header-left"><i class="fa-solid fa-star" style="color: #ffb700;"></i> REPUTASI RATING WEB</div></div>
             
@@ -228,10 +222,8 @@
             <div class="feedback-list" id="feedbackList"></div>
         </div>
 
-        <!-- TAB 5: CONTROL (FITUR AKSES, PRANK, DARK/LIGHT, COLOR PICKER) -->
+        <!-- TAB 5: CONTROL -->
         <div id="controlTab" class="admin-section">
-            
-            <!-- FITUR 1 (PALING ATAS): OPEN/CLOSE AKSES WEB VIEWER -->
             <div class="control-card">
                 <div class="section-header">
                     <div class="section-header-left">
@@ -252,7 +244,6 @@
 
             <hr style="border-color: var(--card-border); margin: 2px 0;">
 
-            <!-- FITUR 2: SPAM EMOJI HALLOWEEN PRANK (UKURAN RANDOM) -->
             <div class="control-card">
                 <div class="section-header">
                     <div class="section-header-left">
@@ -267,7 +258,6 @@
 
             <hr style="border-color: var(--card-border); margin: 2px 0;">
 
-            <!-- FITUR 3 & 4: TEMA BACKGROUND (DARK, LIGHT, & COLOR PICKER) -->
             <div class="control-card">
                 <div class="section-header">
                     <div class="section-header-left">
@@ -275,7 +265,6 @@
                     </div>
                 </div>
                 
-                <!-- Quick Mode Dark / Light -->
                 <p style="font-size: 0.72rem; color: var(--text-gray);">Quick Theme Switch:</p>
                 <div class="btn-group">
                     <button class="btn-secondary" onclick="setViewerThemeMode('dark')">
@@ -286,7 +275,6 @@
                     </button>
                 </div>
 
-                <!-- Custom Color Picker -->
                 <p style="font-size: 0.72rem; color: var(--text-gray); margin-top: 6px;">Custom Color Picker:</p>
                 <div class="color-picker-box">
                     <input type="color" id="bgCustomPicker" value="#07040d" onchange="applyCustomBgColor(this.value)">
@@ -321,7 +309,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // REALTIME PRESENCE
         const myPresenceRef = db.ref('presence/' + db.ref().push().key);
         const connectedRef = db.ref('.info/connected');
         
@@ -337,7 +324,6 @@
             document.getElementById('onlineCountText').innerText = `${count} Online`;
         });
 
-        // MONITOR STATUS AKSES SERVER REALTIME
         db.ref('serverAccess').on('value', (snapshot) => {
             const isOpen = snapshot.val() !== false;
             const badge = document.getElementById('serverStatusBadge');
@@ -490,7 +476,6 @@
             alert('Link thumbnail otomatis tertempel di menu Vault!');
         }
 
-        // HELPER UTILS UNTUK EKSTRAK YOUTUBE VIDEO ID DENGAN PRESISI
         function getYoutubeId(url) {
             if (!url) return "";
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -498,7 +483,6 @@
             return (match && match[2].length === 11) ? match[2] : "";
         }
 
-        // TOOL 2: YOUTUBE DATA EXPORTER (THUMBNAIL FIXED & DOWNLOAD)
         function extractYoutubeData() {
             const inputUrl = document.getElementById('ytUrlInput').value.trim();
             const videoId = getYoutubeId(inputUrl);
@@ -548,7 +532,7 @@
             alert('Judul, Thumbnail, dan Link Video berhasil ditempel ke menu Vault!');
         }
 
-        // TOOL 3: CONVERTER MEDIA (MP3 / OPUS / MP4)
+        // FIX TOOL 3: CONVERTER STABIL DENGAN PROVIDER YTMP3 / Y2MATE REDIRECT
         let currentConvertVideoId = "";
         function processMediaConvert() {
             const inputUrl = document.getElementById('convertUrlInput').value.trim();
@@ -564,15 +548,17 @@
         function downloadFormat(type) {
             if(!currentConvertVideoId) return;
             let downloadUrl = "";
-            if(type === 'mp3' || type === 'opus') {
-                downloadUrl = `https://api.vevioz.com/api/button/mp3/${currentConvertVideoId}`;
+            if(type === 'mp3') {
+                downloadUrl = `https://y2mate.is/en/youtube-to-mp3/${currentConvertVideoId}`;
+            } else if(type === 'opus') {
+                downloadUrl = `https://cobalt.tools/`;
             } else {
-                downloadUrl = `https://api.vevioz.com/api/button/videos/${currentConvertVideoId}`;
+                downloadUrl = `https://y2mate.is/en/youtube-to-mp4/${currentConvertVideoId}`;
             }
             window.open(downloadUrl, '_blank');
         }
 
-        // TOOL 4: SEARCH MUSIK & REALTIME PLAYER DIRECT
+        // FIX TOOL 4: CARI MUSIK DENGAN ITUNES API (100% BEBAS CORS + REALTIME AUDIO PLAYER)
         function handleMusicSearchEnter(e) {
             if(e.key === 'Enter') searchMusic();
         }
@@ -587,66 +573,44 @@
 
             resultsContainer.innerHTML = '<p style="font-size:0.75rem; color: var(--accent-blue); text-align:center;">Mencari lagu...</p>';
 
-            fetch(`https://noembed.com/embed?url=https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`)
-            fetch(`https://ytdl-api-search.vercel.app/api/search?q=${encodeURIComponent(query)}`)
+            fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=6`)
             .then(res => res.json())
             .then(data => {
                 resultsContainer.innerHTML = '';
-                if(!data || !data.results || data.results.length === 0) {
-                    fallbackSearchMusic(query);
+                if(!data.results || data.results.length === 0) {
+                    resultsContainer.innerHTML = '<p style="font-size:0.75rem; color: var(--text-gray); text-align:center;">Lagu tidak ditemukan!</p>';
                     return;
                 }
-                renderMusicResults(data.results.slice(0, 5));
+                
+                data.results.forEach(item => {
+                    const title = item.trackName + " - " + item.artistName;
+                    const thumb = item.artworkUrl100.replace('100x100bb', '300x300bb');
+                    const audioUrl = item.previewUrl;
+                    const queryYt = encodeURIComponent(title);
+
+                    resultsContainer.innerHTML += `
+                        <div class="music-item">
+                            <div class="music-item-header">
+                                <img src="${thumb}" class="music-item-img">
+                                <div class="music-item-title">${escapeHtml(title)}</div>
+                            </div>
+                            
+                            <!-- DIRECT AUDIO PLAYER AUDIO PREVIEW -->
+                            <audio controls src="${audioUrl}"></audio>
+
+                            <div class="btn-group">
+                                <button class="btn-secondary" style="font-size:0.7rem; padding:6px;" onclick="window.open('https://y2mate.is/en/search/${queryYt}', '_blank')"><i class="fa-solid fa-download"></i> Unduh MP3</button>
+                                <button class="btn-blue" style="font-size:0.7rem; padding:6px;" onclick="window.open('https://y2mate.is/en/search/${queryYt}', '_blank')"><i class="fa-solid fa-download"></i> Unduh MP4</button>
+                            </div>
+                        </div>
+                    `;
+                });
             })
-            .catch(() => {
-                fallbackSearchMusic(query);
+            .catch(err => {
+                resultsContainer.innerHTML = '<p style="font-size:0.75rem; color: #ff0055; text-align:center;">Gagal memuat hasil pencarian.</p>';
             });
         }
 
-        function fallbackSearchMusic(query) {
-            const resultsContainer = document.getElementById('musicSearchResults');
-            fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=dQw4w9WgXcQ`)
-            .then(() => {
-                resultsContainer.innerHTML = `
-                    <div class="music-item">
-                        <div class="music-item-header">
-                            <img src="https://i.ibb.co.com/NdkQLH21/file-1194.png" class="music-item-img">
-                            <div class="music-item-title">Pencarian: "${escapeHtml(query)}"</div>
-                        </div>
-                        <p style="font-size:0.7rem; color:var(--text-gray);">Buka daftar lengkap pencarian musik di tab baru:</p>
-                        <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(query)}" target="_blank" class="btn-primary" style="text-align:center; text-decoration:none; font-size:0.75rem; padding:8px;"><i class="fa-brands fa-youtube"></i> Buka Hasil Lagu di YouTube</a>
-                    </div>
-                `;
-            });
-        }
-
-        function renderMusicResults(items) {
-            const resultsContainer = document.getElementById('musicSearchResults');
-            items.forEach(item => {
-                const vId = item.id || getYoutubeId(item.url);
-                const title = item.title || "Lagu Prindapan";
-                const thumb = item.thumbnail || `https://img.youtube.com/vi/${vId}/hqdefault.jpg`;
-
-                resultsContainer.innerHTML += `
-                    <div class="music-item">
-                        <div class="music-item-header">
-                            <img src="${thumb}" class="music-item-img">
-                            <div class="music-item-title">${escapeHtml(title)}</div>
-                        </div>
-                        
-                        <!-- AUDIO PLAYER DIRECT STREAMING -->
-                        <iframe style="width:100%; height:40px; border-radius:8px; border:none;" src="https://www.youtube.com/embed/${vId}?enablejsapi=1" allow="autoplay"></iframe>
-
-                        <div class="btn-group">
-                            <button class="btn-secondary" style="font-size:0.7rem; padding:6px;" onclick="window.open('https://api.vevioz.com/api/button/mp3/${vId}', '_blank')"><i class="fa-solid fa-download"></i> Unduh MP3</button>
-                            <button class="btn-blue" style="font-size:0.7rem; padding:6px;" onclick="window.open('https://api.vevioz.com/api/button/videos/${vId}', '_blank')"><i class="fa-solid fa-download"></i> Unduh MP4</button>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        // MONITOR LIVE CHAT VIEWER DENGAN TOMBOL HAPUS
         db.ref('chatMessages').limitToLast(50).on('value', (snapshot) => {
             const adminBox = document.getElementById('adminChatBox');
             adminBox.innerHTML = '';
@@ -702,7 +666,6 @@
             });
         }
 
-        // MONITOR RATING & REPUTATION DENGAN TOMBOL HAPUS
         db.ref('ratings').on('value', (snapshot) => {
             const ratings = snapshot.val();
             const list = document.getElementById('feedbackList');
