@@ -36,7 +36,8 @@
 
         input, textarea, button { width: 100%; padding: 12px; background: #0d061a; border: 1px solid var(--card-border); border-radius: 10px; color: #fff; outline: none; font-size: 0.8rem; }
         button.btn-primary { background: linear-gradient(45deg, var(--accent-pink), var(--accent-purple)); font-weight: 700; border: none; cursor: pointer; font-family: 'Orbitron', sans-serif; }
-        button.btn-danger { background: linear-gradient(45deg, #ff0055, #990000); font-weight: 700; border: none; cursor: pointer; font-family: 'Orbitron', sans-serif; }
+        button.btn-secondary { background: #1a0c33; border: 1px solid var(--accent-purple); color: #fff; font-weight: 600; cursor: pointer; }
+        button.btn-blue { background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); border: none; font-weight: 700; cursor: pointer; font-family: 'Orbitron', sans-serif; }
 
         .chat-box-admin { height: 220px; background: #0d061a; border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
         .chat-msg { font-size: 0.78rem; background: rgba(255, 255, 255, 0.03); padding: 6px 10px; border-radius: 6px; }
@@ -48,7 +49,8 @@
         .feedback-item { background: #0d061a; border: 1px solid var(--card-border); border-radius: 8px; padding: 8px 12px; font-size: 0.75rem; }
         .feedback-stars { color: #ffb700; margin-bottom: 2px; }
 
-        .preview-box { border: 1px dashed var(--accent-purple); border-radius: 10px; padding: 12px; background: #0d061a; font-size: 0.78rem; }
+        .output-box { display: none; background: #0d061a; border: 1px solid var(--accent-purple); border-radius: 10px; padding: 12px; font-size: 0.78rem; gap: 8px; flex-direction: column; margin-top: 5px; }
+        .btn-group { display: flex; gap: 6px; margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -59,12 +61,12 @@
             <div class="header-title"><i class="fa-solid fa-user-shield"></i> PRINDAPAN ADMIN</div>
         </div>
 
-        <!-- NAVIGATION MENU TABS -->
+        <!-- TAB NAVIGATION -->
         <div class="admin-nav">
             <button class="admin-nav-btn active" onclick="showAdminTab('vaultTab', this)"><i class="fa-solid fa-folder"></i> Vault</button>
+            <button class="admin-nav-btn" onclick="showAdminTab('toolsTab', this)"><i class="fa-solid fa-wrench"></i> Tools</button>
             <button class="admin-nav-btn" onclick="showAdminTab('liveChatTab', this)"><i class="fa-solid fa-comments"></i> Live Chat</button>
             <button class="admin-nav-btn" onclick="showAdminTab('infoAdminTab', this)"><i class="fa-solid fa-chart-line"></i> Rating</button>
-            <button class="admin-nav-btn" onclick="showAdminTab('toolsTab', this)"><i class="fa-solid fa-screwdriver-wrench"></i> Tools</button>
         </div>
 
         <!-- TAB 1: VAULT CONTENT MANAGEMENT -->
@@ -72,17 +74,56 @@
             <div class="section-header"><i class="fa-solid fa-plus-circle" style="color: var(--accent-pink);"></i> TAMBAH LINK BARU</div>
             <input type="text" id="linkTitle" placeholder="Judul File / Game">
             <input type="text" id="linkUrl" placeholder="URL Download Link">
-            <input type="text" id="linkImg" placeholder="URL Gambar Thumbnail (Opsional)">
+            <input type="text" id="linkImg" placeholder="URL Gambar Thumbnail (Direct Link)">
             <button class="btn-primary" onclick="addLink()"><i class="fa-solid fa-floppy-disk"></i> SIMPAN FILE</button>
         </div>
 
-        <!-- TAB 2: LIVE CHAT VIEWER MONITORING -->
+        <!-- TAB 2: TOOLS UTILITAS -->
+        <div id="toolsTab" class="admin-section">
+            
+            <!-- FITUR 1: KONVERSI GAMBAR KE DIRECT LINK -->
+            <div class="section-header"><i class="fa-solid fa-image" style="color: var(--accent-pink);"></i> KONVERSI GAMBAR KE DIRECT LINK</div>
+            <input type="file" id="imageInput" accept="image/*">
+            <button class="btn-primary" onclick="convertImageToDirectUrl()"><i class="fa-solid fa-bolt"></i> PROSES GAMBAR</button>
+            
+            <div id="uploadResult" class="output-box">
+                <span style="color: var(--accent-blue); font-weight: 700;">Direct Data URL Berhasil Dibuat:</span>
+                <textarea id="directUrlResult" rows="3" readonly></textarea>
+                <div class="btn-group">
+                    <button class="btn-secondary" onclick="copyDirectUrl()"><i class="fa-solid fa-copy"></i> Salin Link</button>
+                    <button class="btn-blue" onclick="applyToThumbnail()"><i class="fa-solid fa-arrow-right-to-bracket"></i> Tempel Ke Thumbnail</button>
+                </div>
+            </div>
+
+            <hr style="border-color: var(--card-border); margin: 8px 0;">
+
+            <!-- FITUR 2: YOUTUBE DATA EXPORTER -->
+            <div class="section-header"><i class="fa-brands fa-youtube" style="color: #ff0055;"></i> YOUTUBE DATA EXPORTER</div>
+            <input type="text" id="ytUrlInput" placeholder="Tempelkan link video YouTube di sini...">
+            <button class="btn-primary" onclick="extractYoutubeData()"><i class="fa-solid fa-magnifying-glass"></i> EKSTRAK DATA VIDEO</button>
+
+            <div id="ytResult" class="output-box">
+                <strong style="color: var(--accent-blue);">Judul Video:</strong>
+                <input type="text" id="ytTitleResult" readonly>
+                
+                <strong style="color: var(--accent-blue);">Thumbnail HD Direct URL:</strong>
+                <input type="text" id="ytThumbResult" readonly>
+                
+                <strong style="color: var(--accent-blue);">Deskripsi Video:</strong>
+                <textarea id="ytDescResult" rows="2" readonly></textarea>
+                
+                <button class="btn-blue" onclick="applyYtDataToVault()"><i class="fa-solid fa-arrow-right-to-bracket"></i> Gunakan Data Ini Di Vault</button>
+            </div>
+
+        </div>
+
+        <!-- TAB 3: LIVE CHAT VIEWER MONITORING -->
         <div id="liveChatTab" class="admin-section">
             <div class="section-header"><i class="fa-solid fa-comments" style="color: var(--accent-blue);"></i> MONITOR LIVE CHAT VIEWER</div>
             <div class="chat-box-admin" id="adminChatBox"></div>
         </div>
 
-        <!-- TAB 3: INFO & REPUTASI RATING -->
+        <!-- TAB 4: INFO & REPUTASI RATING -->
         <div id="infoAdminTab" class="admin-section">
             <div class="section-header"><i class="fa-solid fa-star" style="color: #ffb700;"></i> REPUTASI RATING WEB</div>
             
@@ -96,26 +137,6 @@
 
             <div class="section-header" style="margin-top: 5px;"><i class="fa-solid fa-comment-dots" style="color: var(--accent-blue);"></i> SARAN & KRITIK USER</div>
             <div class="feedback-list" id="feedbackList"></div>
-        </div>
-
-        <!-- TAB 4: TOOLS ADMIN -->
-        <div id="toolsTab" class="admin-section">
-            <div class="section-header"><i class="fa-solid fa-bullhorn" style="color: var(--accent-pink);"></i> BROADCAST MESSAGE POP-UP</div>
-            <textarea id="broadcastMsg" rows="2" placeholder="Tuliskan pesan broadcast ke layar viewer..."></textarea>
-            <button class="btn-primary" onclick="sendBroadcast()"><i class="fa-solid fa-paper-plane"></i> KIRIM BROADCAST</button>
-
-            <hr style="border-color: var(--card-border); margin: 5px 0;">
-
-            <div class="section-header"><i class="fa-solid fa-eye" style="color: var(--accent-blue);"></i> LIVE PREVIEW BROADCAST</div>
-            <div class="preview-box">
-                <strong style="color: var(--accent-pink);">Status Broadcast Terakhir:</strong>
-                <p id="previewText" style="margin-top: 5px; color: var(--text-gray); italic;">(Belum ada broadcast)</p>
-            </div>
-
-            <hr style="border-color: var(--card-border); margin: 5px 0;">
-
-            <div class="section-header"><i class="fa-solid fa-triangle-exclamation" style="color: #ff0055;"></i> SYSTEM DANGER ZONE</div>
-            <button class="btn-danger" onclick="clearAllChat()"><i class="fa-solid fa-trash"></i> BERSIHKAN SEMUA LIVE CHAT</button>
         </div>
 
     </div>
@@ -143,7 +164,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // ADD LINK DATA
+        // SIMPAN LINK DATA KE FIREBASE
         function addLink() {
             const title = document.getElementById('linkTitle').value.trim();
             const url = document.getElementById('linkUrl').value.trim();
@@ -164,38 +185,93 @@
             });
         }
 
-        // TOOLS: SEND BROADCAST
-        function sendBroadcast() {
-            const text = document.getElementById('broadcastMsg').value.trim();
-            if (!text) return;
-            db.ref('liveBroadcast').set({
-                text: text,
-                timestamp: Date.now()
-            }, (err) => {
-                if(!err) {
-                    alert('Broadcast terkirim ke seluruh viewer!');
-                    document.getElementById('broadcastMsg').value = '';
-                }
+        // TOOL 1: KONVERSI GAMBAR KE DIRECT DATA URL (BASE64 TANPA SERVER SERVER EXTERNAL)
+        function convertImageToDirectUrl() {
+            const fileInput = document.getElementById('imageInput');
+            
+            if (fileInput.files.length === 0) {
+                alert('Pilih gambar dari perangkat kamu dulu bre!');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const directUrl = e.target.result;
+                document.getElementById('directUrlResult').value = directUrl;
+                document.getElementById('uploadResult').style.display = 'flex';
+                alert('Gambar berhasil dikonversi ke Direct Data URL!');
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        function copyDirectUrl() {
+            const copyText = document.getElementById('directUrlResult');
+            copyText.select();
+            document.execCommand('copy');
+            alert('Direct URL berhasil disalin!');
+        }
+
+        function applyToThumbnail() {
+            const directUrl = document.getElementById('directUrlResult').value;
+            document.getElementById('linkImg').value = directUrl;
+            showAdminTab('vaultTab', document.querySelectorAll('.admin-nav-btn')[0]);
+            alert('Link thumbnail otomatis tertempel di menu Vault!');
+        }
+
+        // TOOL 2: YOUTUBE DATA EXPORTER
+        function extractYoutubeData() {
+            const inputUrl = document.getElementById('ytUrlInput').value.trim();
+            if (!inputUrl) {
+                alert('Masukkan link video YouTube dulu!');
+                return;
+            }
+
+            let videoId = "";
+            if (inputUrl.includes("youtu.be/")) {
+                videoId = inputUrl.split("youtu.be/")[1].split("?")[0];
+            } else if (inputUrl.includes("v=")) {
+                videoId = inputUrl.split("v=")[1].split("&")[0];
+            }
+
+            if (!videoId) {
+                alert('Format link YouTube tidak valid!');
+                return;
+            }
+
+            const thumbUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+            document.getElementById('ytThumbResult').value = thumbUrl;
+
+            fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('ytTitleResult').value = data.title || "Judul Video YouTube";
+                document.getElementById('ytDescResult').value = `Uploader: ${data.author_name || 'YouTube Channel'}`;
+                document.getElementById('ytResult').style.display = 'flex';
+            })
+            .catch(() => {
+                document.getElementById('ytTitleResult').value = "Video YouTube (" + videoId + ")";
+                document.getElementById('ytDescResult').value = "Link: " + inputUrl;
+                document.getElementById('ytResult').style.display = 'flex';
             });
         }
 
-        // TOOLS: LIVE PREVIEW BROADCAST MONITOR
-        db.ref('liveBroadcast').on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data && data.text) {
-                document.getElementById('previewText').innerText = `"${data.text}"`;
-            }
-        });
+        function applyYtDataToVault() {
+            const title = document.getElementById('ytTitleResult').value;
+            const thumb = document.getElementById('ytThumbResult').value;
+            const url = document.getElementById('ytUrlInput').value;
 
-        // TOOLS: CLEAR CHAT
-        function clearAllChat() {
-            if(confirm('Yakin mau hapus seluruh isi Live Chat viewer?')) {
-                db.ref('chatMessages').remove();
-                alert('Live chat berhasil dibersihkan!');
-            }
+            document.getElementById('linkTitle').value = title;
+            document.getElementById('linkImg').value = thumb;
+            document.getElementById('linkUrl').value = url;
+
+            showAdminTab('vaultTab', document.querySelectorAll('.admin-nav-btn')[0]);
+            alert('Judul, Thumbnail, dan Link Video berhasil ditempel ke menu Vault!');
         }
 
-        // MONITOR LIVE CHAT IN ADMIN
+        // MONITOR LIVE CHAT VIEWER
         db.ref('chatMessages').limitToLast(50).on('value', (snapshot) => {
             const adminBox = document.getElementById('adminChatBox');
             adminBox.innerHTML = '';
@@ -213,7 +289,7 @@
             }
         });
 
-        // MONITOR RATINGS AND REPUTATION
+        // MONITOR RATING & REPUTATION
         db.ref('ratings').on('value', (snapshot) => {
             const ratings = snapshot.val();
             const list = document.getElementById('feedbackList');
