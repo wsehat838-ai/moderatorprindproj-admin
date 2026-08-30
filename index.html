@@ -32,7 +32,13 @@
         .admin-section { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 18px; display: none; flex-direction: column; gap: 12px; }
         .admin-section.active { display: flex; }
 
-        .section-header { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+        .section-header { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; font-weight: 800; color: #fff; display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+        .section-header-left { display: flex; align-items: center; gap: 8px; }
+
+        /* ONLINE INDICATOR BADGE */
+        .online-indicator { font-size: 0.72rem; font-family: 'Poppins', sans-serif; font-weight: 600; color: #00ff66; background: rgba(0, 255, 102, 0.1); border: 1px solid rgba(0, 255, 102, 0.3); padding: 2px 8px; border-radius: 20px; display: flex; align-items: center; gap: 5px; }
+        .online-dot { width: 7px; height: 7px; background-color: #00ff66; border-radius: 50%; box-shadow: 0 0 6px #00ff66; animation: pulse-dot 1.5s infinite; }
+        @keyframes pulse-dot { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
         input, textarea, button { width: 100%; padding: 12px; background: #0d061a; border: 1px solid var(--card-border); border-radius: 10px; color: #fff; outline: none; font-size: 0.8rem; }
         button.btn-primary { background: linear-gradient(45deg, var(--accent-pink), var(--accent-purple)); font-weight: 700; border: none; cursor: pointer; font-family: 'Orbitron', sans-serif; }
@@ -81,7 +87,7 @@
 
         <!-- TAB 1: VAULT CONTENT MANAGEMENT + LIST UPLOADED FILES -->
         <div id="vaultTab" class="admin-section active">
-            <div class="section-header"><i class="fa-solid fa-plus-circle" style="color: var(--accent-pink);"></i> TAMBAH LINK BARU</div>
+            <div class="section-header"><div class="section-header-left"><i class="fa-solid fa-plus-circle" style="color: var(--accent-pink);"></i> TAMBAH LINK BARU</div></div>
             <input type="text" id="linkTitle" placeholder="Judul File / Game">
             <input type="text" id="linkUrl" placeholder="URL Download Link">
             <input type="text" id="linkImg" placeholder="URL Gambar Thumbnail (Direct Link)">
@@ -89,7 +95,7 @@
 
             <hr style="border-color: var(--card-border); margin: 6px 0;">
 
-            <div class="section-header"><i class="fa-solid fa-list-ul" style="color: var(--accent-blue);"></i> DAFTAR FILE UPLOADED</div>
+            <div class="section-header"><div class="section-header-left"><i class="fa-solid fa-list-ul" style="color: var(--accent-blue);"></i> DAFTAR FILE UPLOADED</div></div>
             <div class="vault-list-box" id="vaultListBox"></div>
         </div>
 
@@ -97,7 +103,7 @@
         <div id="toolsTab" class="admin-section">
             
             <!-- FITUR 1: KONVERSI GAMBAR KE DIRECT LINK -->
-            <div class="section-header"><i class="fa-solid fa-image" style="color: var(--accent-pink);"></i> KONVERSI GAMBAR KE DIRECT LINK</div>
+            <div class="section-header"><div class="section-header-left"><i class="fa-solid fa-image" style="color: var(--accent-pink);"></i> KONVERSI GAMBAR KE DIRECT LINK</div></div>
             <input type="file" id="imageInput" accept="image/*">
             <button class="btn-primary" onclick="convertImageToDirectUrl()"><i class="fa-solid fa-bolt"></i> PROSES GAMBAR</button>
             
@@ -113,7 +119,7 @@
             <hr style="border-color: var(--card-border); margin: 8px 0;">
 
             <!-- FITUR 2: YOUTUBE DATA EXPORTER -->
-            <div class="section-header"><i class="fa-brands fa-youtube" style="color: #ff0055;"></i> YOUTUBE DATA EXPORTER</div>
+            <div class="section-header"><div class="section-header-left"><i class="fa-brands fa-youtube" style="color: #ff0055;"></i> YOUTUBE DATA EXPORTER</div></div>
             <input type="text" id="ytUrlInput" placeholder="Tempelkan link video YouTube di sini...">
             <button class="btn-primary" onclick="extractYoutubeData()"><i class="fa-solid fa-magnifying-glass"></i> EKSTRAK DATA VIDEO</button>
 
@@ -132,9 +138,17 @@
 
         </div>
 
-        <!-- TAB 3: LIVE CHAT VIEWER MONITORING -->
+        <!-- TAB 3: LIVE CHAT VIEWER MONITORING + ONLINE COUNTER -->
         <div id="liveChatTab" class="admin-section">
-            <div class="section-header"><i class="fa-solid fa-comments" style="color: var(--accent-blue);"></i> MONITOR LIVE CHAT VIEWER</div>
+            <div class="section-header">
+                <div class="section-header-left">
+                    <i class="fa-solid fa-comments" style="color: var(--accent-blue);"></i> MONITOR LIVE CHAT VIEWER
+                </div>
+                <div class="online-indicator" id="onlineCountBadge">
+                    <div class="online-dot"></div> <span id="onlineCountText">0 Online</span>
+                </div>
+            </div>
+            
             <div class="chat-box-admin" id="adminChatBox"></div>
             
             <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
@@ -145,7 +159,7 @@
 
         <!-- TAB 4: INFO & REPUTASI RATING -->
         <div id="infoAdminTab" class="admin-section">
-            <div class="section-header"><i class="fa-solid fa-star" style="color: #ffb700;"></i> REPUTASI RATING WEB</div>
+            <div class="section-header"><div class="section-header-left"><i class="fa-solid fa-star" style="color: #ffb700;"></i> REPUTASI RATING WEB</div></div>
             
             <div class="rating-summary-box">
                 <div>
@@ -155,7 +169,7 @@
                 <div style="font-size: 0.75rem; color: var(--text-gray);" id="totalReviewsCount">0 Ulasan</div>
             </div>
 
-            <div class="section-header" style="margin-top: 5px;"><i class="fa-solid fa-comment-dots" style="color: var(--accent-blue);"></i> SARAN & KRITIK USER</div>
+            <div class="section-header" style="margin-top: 5px;"><div class="section-header-left"><i class="fa-solid fa-comment-dots" style="color: var(--accent-blue);"></i> SARAN & KRITIK USER</div></div>
             <div class="feedback-list" id="feedbackList"></div>
         </div>
 
@@ -183,6 +197,22 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+
+        // REALTIME PRESENCE (DETEKSI JUMLAH ORANG ONLINE)
+        const myPresenceRef = db.ref('presence/' + db.ref().push().key);
+        const connectedRef = db.ref('.info/connected');
+        
+        connectedRef.on('value', (snap) => {
+            if (snap.val() === true) {
+                myPresenceRef.onDisconnect().remove();
+                myPresenceRef.set(true);
+            }
+        });
+
+        db.ref('presence').on('value', (snapshot) => {
+            const count = snapshot.numChildren();
+            document.getElementById('onlineCountText').innerText = `${count} Online`;
+        });
 
         // SIMPAN LINK DATA KE FIREBASE DENGAN TIMESTAMP TANGGAL UPLOAD
         function addLink() {
@@ -415,4 +445,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
