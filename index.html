@@ -39,6 +39,15 @@
         button.btn-secondary { background: #1a0c33; border: 1px solid var(--accent-purple); color: #fff; font-weight: 600; cursor: pointer; }
         button.btn-blue { background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); border: none; font-weight: 700; cursor: pointer; font-family: 'Orbitron', sans-serif; }
 
+        /* VAULT MANAGED LIST */
+        .vault-list-box { max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 5px; }
+        .vault-item { background: #0d061a; border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .vault-item-info { display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+        .vault-item-title { font-size: 0.8rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .vault-item-date { font-size: 0.68rem; color: var(--text-gray); }
+        .btn-del-vault { background: rgba(255, 0, 85, 0.2); border: 1px solid #ff0055; color: #ff0055; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; flex-shrink: 0; }
+        .btn-del-vault:hover { background: #ff0055; color: #fff; }
+
         .chat-box-admin { height: 220px; background: #0d061a; border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
         .chat-msg { font-size: 0.78rem; background: rgba(255, 255, 255, 0.03); padding: 8px 10px; border-radius: 6px; display: flex; align-items: center; gap: 8px; overflow: hidden; }
         .chat-msg span { word-break: break-word; }
@@ -70,13 +79,18 @@
             <button class="admin-nav-btn" onclick="showAdminTab('infoAdminTab', this)"><i class="fa-solid fa-chart-line"></i> Rating</button>
         </div>
 
-        <!-- TAB 1: VAULT CONTENT MANAGEMENT -->
+        <!-- TAB 1: VAULT CONTENT MANAGEMENT + LIST UPLOADED FILES -->
         <div id="vaultTab" class="admin-section active">
             <div class="section-header"><i class="fa-solid fa-plus-circle" style="color: var(--accent-pink);"></i> TAMBAH LINK BARU</div>
             <input type="text" id="linkTitle" placeholder="Judul File / Game">
             <input type="text" id="linkUrl" placeholder="URL Download Link">
             <input type="text" id="linkImg" placeholder="URL Gambar Thumbnail (Direct Link)">
             <button class="btn-primary" onclick="addLink()"><i class="fa-solid fa-floppy-disk"></i> SIMPAN FILE</button>
+
+            <hr style="border-color: var(--card-border); margin: 6px 0;">
+
+            <div class="section-header"><i class="fa-solid fa-list-ul" style="color: var(--accent-blue);"></i> DAFTAR FILE UPLOADED</div>
+            <div class="vault-list-box" id="vaultListBox"></div>
         </div>
 
         <!-- TAB 2: TOOLS UTILITAS -->
@@ -170,7 +184,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // SIMPAN LINK DATA KE FIREBASE
+        // SIMPAN LINK DATA KE FIREBASE DENGAN TIMESTAMP TANGGAL UPLOAD
         function addLink() {
             const title = document.getElementById('linkTitle').value.trim();
             const url = document.getElementById('linkUrl').value.trim();
@@ -181,14 +195,58 @@
                 return;
             }
 
-            db.ref('links').push({ title, url, img }, (err) => {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+            db.ref('links').push({ title, url, img, date: dateStr }, (err) => {
                 if(!err) {
                     alert('Berhasil menambah link!');
                     document.getElementById('linkTitle').value = '';
                     document.getElementById('linkUrl').value = '';
                     document.getElementById('linkImg').value = '';
+                } else {
+                    alert('Gagal menyimpan link!');
                 }
             });
+        }
+
+        // LOAD & RENDER DAFTAR FILE UPLOADED DI VAULT
+        db.ref('links').on('value', (snapshot) => {
+            const listBox = document.getElementById('vaultListBox');
+            listBox.innerHTML = '';
+            const links = snapshot.val();
+
+            if (!links) {
+                listBox.innerHTML = `<div style="font-size: 0.75rem; color: var(--text-gray); text-align: center; padding: 10px;">Belum ada file yang di-upload ke web viewer.</div>`;
+                return;
+            }
+
+            for (let key in links) {
+                const item = links[key];
+                const uploadDate = item.date || 'Waktu tidak diketahui';
+                listBox.innerHTML += `
+                    <div class="vault-item">
+                        <div class="vault-item-info">
+                            <div class="vault-item-title">${escapeHtml(item.title)}</div>
+                            <div class="vault-item-date"><i class="fa-regular fa-clock"></i> ${uploadDate}</div>
+                        </div>
+                        <button class="btn-del-vault" onclick="deleteVaultItem('${key}')" title="Hapus File"><i class="fa-solid fa-trash"></i> Hapus</button>
+                    </div>
+                `;
+            }
+        });
+
+        // HAPUS FILE DARI VAULT
+        function deleteVaultItem(key) {
+            if (confirm('Yakin ingin menghapus file ini dari web viewer?')) {
+                db.ref('links/' + key).remove((err) => {
+                    if (err) {
+                        alert('Gagal menghapus file!');
+                    } else {
+                        alert('File berhasil dihapus dari viewer!');
+                    }
+                });
+            }
         }
 
         // TOOL 1: KONVERSI GAMBAR KE DIRECT DATA URL (BASE64 TANPA SERVER EXTERNAL)
