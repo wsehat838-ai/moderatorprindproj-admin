@@ -55,15 +55,22 @@
         .btn-del-vault:hover { background: #ff0055; color: #fff; }
 
         .chat-box-admin { height: 220px; background: #0d061a; border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
-        .chat-msg { font-size: 0.78rem; background: rgba(255, 255, 255, 0.03); padding: 8px 10px; border-radius: 6px; display: flex; align-items: center; gap: 8px; overflow: hidden; }
-        .chat-msg span { word-break: break-word; }
+        
+        /* ITEM ROW CHAT & RATING WITH DELETE BUTTON */
+        .chat-msg-row { font-size: 0.78rem; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); padding: 8px 10px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .chat-msg-content { display: flex; align-items: center; gap: 8px; overflow: hidden; flex: 1; word-break: break-word; }
 
         .rating-summary-box { background: #0d061a; border-radius: 10px; padding: 12px; border: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; }
         .avg-rating { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; font-weight: 900; color: #ffb700; display: flex; align-items: center; gap: 6px; }
 
         .feedback-list { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-        .feedback-item { background: #0d061a; border: 1px solid var(--card-border); border-radius: 8px; padding: 8px 12px; font-size: 0.75rem; }
+        .feedback-item-row { background: #0d061a; border: 1px solid var(--card-border); border-radius: 8px; padding: 8px 12px; font-size: 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .feedback-item-content { display: flex; flex-direction: column; gap: 2px; flex: 1; overflow: hidden; }
         .feedback-stars { color: #ffb700; margin-bottom: 2px; }
+
+        /* TOMBOL HAPUS SAMPAH MERAH UNTUK CHAT & RATING */
+        .btn-delete-action { background: rgba(255, 0, 85, 0.15); border: 1px solid #ff0055; color: #ff0055; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.75rem; flex-shrink: 0; transition: all 0.2s ease; }
+        .btn-delete-action:hover { background: #ff0055; color: #fff; box-shadow: 0 0 10px rgba(255, 0, 85, 0.5); }
 
         .output-box { display: none; background: #0d061a; border: 1px solid var(--accent-purple); border-radius: 10px; padding: 12px; font-size: 0.78rem; gap: 8px; flex-direction: column; margin-top: 5px; }
         .btn-group { display: flex; gap: 6px; margin-top: 5px; }
@@ -365,7 +372,7 @@
             alert('Judul, Thumbnail, dan Link Video berhasil ditempel ke menu Vault!');
         }
 
-        // MONITOR LIVE CHAT VIEWER BERSIH TANPA TOMBOL
+        // MONITOR LIVE CHAT VIEWER DENGAN TOMBOL HAPUS SAMPAH MERAH
         db.ref('chatMessages').limitToLast(50).on('value', (snapshot) => {
             const adminBox = document.getElementById('adminChatBox');
             adminBox.innerHTML = '';
@@ -373,16 +380,34 @@
             if (messages) {
                 for (let key in messages) {
                     const msg = messages[key];
+                    const userName = msg.user || msg.username || 'User';
+                    const userText = msg.text || msg.message || '';
                     adminBox.innerHTML += `
-                        <div class="chat-msg">
-                            <strong style="color: var(--accent-pink); white-space: nowrap;">${escapeHtml(msg.user)}:</strong> 
-                            <span>${escapeHtml(msg.text)}</span>
+                        <div class="chat-msg-row">
+                            <div class="chat-msg-content">
+                                <strong style="color: var(--accent-pink); white-space: nowrap;">${escapeHtml(userName)}:</strong> 
+                                <span>${escapeHtml(userText)}</span>
+                            </div>
+                            <button class="btn-delete-action" onclick="deleteChatMessage('${key}')" title="Hapus Pesan">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
                         </div>
                     `;
                 }
                 adminBox.scrollTop = adminBox.scrollHeight;
+            } else {
+                adminBox.innerHTML = '<p style="font-size:0.75rem; color:var(--text-gray); text-align:center; padding-top:20px;">Belum ada pesan chat.</p>';
             }
         });
+
+        // FUNGSI HAPUS PESAN CHAT PERMANEN
+        function deleteChatMessage(key) {
+            if (confirm("Hapus pesan ini secara permanen dari Firebase?")) {
+                db.ref('chatMessages/' + key).remove((err) => {
+                    if (err) alert("Gagal menghapus: " + err.message);
+                });
+            }
+        }
 
         function sendAdminBroadcast() {
             const msg = document.getElementById('adminBroadcastInput').value.trim();
@@ -404,15 +429,16 @@
             });
         }
 
-        // MONITOR RATING & REPUTATION
+        // MONITOR RATING & REPUTATION DENGAN TOMBOL HAPUS SAMPAH MERAH
         db.ref('ratings').on('value', (snapshot) => {
             const ratings = snapshot.val();
             const list = document.getElementById('feedbackList');
             list.innerHTML = '';
 
             if(!ratings) {
-                document.getElementById('avgRatingValue').innerText = '0.0 ★';
+                document.getElementById('avgRatingValue').innerHTML = '0.0 <i class="fa-solid fa-star"></i>';
                 document.getElementById('totalReviewsCount').innerText = '0 Ulasan';
+                list.innerHTML = '<p style="font-size:0.75rem; color:var(--text-gray); text-align:center; padding:10px;">Belum ada ulasan.</p>';
                 return;
             }
 
@@ -421,16 +447,23 @@
 
             for (let key in ratings) {
                 const item = ratings[key];
-                totalStars += item.stars;
+                const starVal = item.stars || item.rating || 5;
+                const feedbackText = item.feedback || item.comment || item.text || '';
+                totalStars += starVal;
                 count++;
 
                 let starsHtml = '';
-                for(let i=0; i<item.stars; i++) starsHtml += '★';
+                for(let i=0; i<starVal; i++) starsHtml += '★';
 
                 list.innerHTML = `
-                    <div class="feedback-item">
-                        <div class="feedback-stars">${starsHtml}</div>
-                        <div>${escapeHtml(item.feedback)}</div>
+                    <div class="feedback-item-row">
+                        <div class="feedback-item-content">
+                            <div class="feedback-stars">${starsHtml}</div>
+                            <div>${escapeHtml(feedbackText)}</div>
+                        </div>
+                        <button class="btn-delete-action" onclick="deleteRatingMessage('${key}')" title="Hapus Ulasan">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
                     </div>
                 ` + list.innerHTML;
             }
@@ -440,9 +473,18 @@
             document.getElementById('totalReviewsCount').innerText = `${count} Ulasan`;
         });
 
+        // FUNGSI HAPUS RATING PERMANEN
+        function deleteRatingMessage(key) {
+            if (confirm("Hapus ulasan ini secara permanen dari Firebase?")) {
+                db.ref('ratings/' + key).remove((err) => {
+                    if (err) alert("Gagal menghapus: " + err.message);
+                });
+            }
+        }
+
         function escapeHtml(text) {
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
     </script>
 </body>
-    </html>
+                </html>
