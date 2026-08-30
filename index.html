@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRINDAPAN GAMES - Admin Panel</title>
+    <title>ADMIN PANEL - PRINDAPAN</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -20,93 +20,233 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
         body { background-color: var(--bg-dark); color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
         
-        .admin-container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 15px; }
+        .admin-container { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 18px; }
 
-        .header-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 15px; display: flex; align-items: center; justify-content: space-between; }
-        .header-title { font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--accent-pink); font-weight: 800; }
+        .main-title { 
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 1.3rem; 
+            font-weight: 900; 
+            text-align: center; 
+            color: var(--accent-blue);
+            letter-spacing: 1.5px;
+            margin-bottom: 5px;
+        }
 
-        .admin-nav { display: flex; gap: 6px; background: #0d061a; border-radius: 12px; padding: 5px; border: 1px solid var(--card-border); overflow-x: auto; }
-        .admin-nav-btn { flex: 1; min-width: 80px; padding: 10px 0; border: none; background: transparent; color: var(--text-gray); font-size: 0.75rem; font-weight: 700; border-radius: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: 0.3s; }
-        .admin-nav-btn.active { background: linear-gradient(45deg, var(--accent-pink), var(--accent-purple)); color: #fff; }
+        /* TOP NAVIGATION TABS */
+        .admin-nav { 
+            display: flex; 
+            gap: 10px; 
+            background: #0d061a; 
+            border-radius: 16px; 
+            padding: 8px; 
+            border: 1px solid var(--card-border); 
+        }
+        .admin-nav-btn { 
+            flex: 1; 
+            padding: 12px 0; 
+            border: 1px solid transparent; 
+            background: transparent; 
+            color: var(--text-gray); 
+            font-size: 0.8rem; 
+            font-weight: 700; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 6px; 
+            transition: 0.3s ease; 
+        }
+        .admin-nav-btn i { font-size: 1.2rem; }
+        .admin-nav-btn.active { 
+            background: rgba(255, 0, 119, 0.15); 
+            border-color: var(--accent-pink); 
+            color: #fff; 
+            box-shadow: 0 0 15px rgba(255, 0, 119, 0.2);
+        }
 
-        .admin-section { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 18px; display: none; flex-direction: column; gap: 12px; }
+        .admin-section { display: none; flex-direction: column; gap: 16px; width: 100%; }
         .admin-section.active { display: flex; }
 
-        .section-header { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+        .card-box { 
+            background: var(--card-bg); 
+            border: 1px solid var(--card-border); 
+            border-radius: 16px; 
+            padding: 18px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
 
-        input, textarea, button { width: 100%; padding: 12px; background: #0d061a; border: 1px solid var(--card-border); border-radius: 10px; color: #fff; outline: none; font-size: 0.8rem; }
-        button.btn-primary { background: linear-gradient(45deg, var(--accent-pink), var(--accent-purple)); font-weight: 700; border: none; cursor: pointer; font-family: 'Orbitron', sans-serif; }
+        .card-title { 
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 0.95rem; 
+            font-weight: 800; 
+            color: #fff; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        .card-title i { color: var(--accent-pink); }
 
-        .chat-box-admin { height: 220px; background: #0d061a; border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+        .input-label { font-size: 0.78rem; color: var(--text-gray); font-weight: 600; }
+
+        input[type="text"], textarea { 
+            width: 100%; 
+            padding: 12px 14px; 
+            background: #0d061a; 
+            border: 1px solid var(--card-border); 
+            border-radius: 10px; 
+            color: #fff; 
+            outline: none; 
+            font-size: 0.85rem; 
+        }
+        input[type="text"]:focus, textarea:focus { border-color: var(--accent-purple); }
+
+        input[type="file"] {
+            width: 100%;
+            background: #0d061a;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 8px;
+            color: var(--text-gray);
+            font-size: 0.8rem;
+        }
+
+        .btn-gradient { 
+            width: 100%; 
+            padding: 13px; 
+            background: linear-gradient(45deg, var(--accent-pink), var(--accent-purple)); 
+            border: none; 
+            border-radius: 10px; 
+            color: #fff; 
+            font-family: 'Orbitron', sans-serif; 
+            font-weight: 800; 
+            font-size: 0.85rem; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(255, 0, 119, 0.3);
+        }
+
+        .chat-box-admin { height: 200px; background: #0d061a; border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
         .chat-msg { font-size: 0.78rem; background: rgba(255, 255, 255, 0.03); padding: 6px 10px; border-radius: 6px; }
 
         .rating-summary-box { background: #0d061a; border-radius: 10px; padding: 12px; border: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; }
-        .avg-rating { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; font-weight: 900; color: #ffb700; display: flex; align-items: center; gap: 6px; }
+        .avg-rating { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 900; color: #ffb700; display: flex; align-items: center; gap: 6px; }
 
         .feedback-list { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
         .feedback-item { background: #0d061a; border: 1px solid var(--card-border); border-radius: 8px; padding: 8px 12px; font-size: 0.75rem; }
         .feedback-stars { color: #ffb700; margin-bottom: 2px; }
+        
+        .output-box { display: none; background: #0d061a; border: 1px solid var(--accent-blue); border-radius: 10px; padding: 10px; font-size: 0.78rem; word-break: break-all; margin-top: 5px; }
     </style>
 </head>
 <body>
 
     <div class="admin-container">
 
-        <div class="header-box">
-            <div class="header-title"><i class="fa-solid fa-user-shield"></i> PRINDAPAN ADMIN</div>
-        </div>
+        <div class="main-title">ADMIN PANEL - PRINDAPAN</div>
 
-        <!-- NAVIGATION MENU -->
+        <!-- TAB BUTTONS HEADER -->
         <div class="admin-nav">
-            <button class="admin-nav-btn active" onclick="showAdminTab('vaultTab', this)"><i class="fa-solid fa-folder"></i> Vault</button>
-            <button class="admin-nav-btn" onclick="showAdminTab('liveChatTab', this)"><i class="fa-solid fa-comments"></i> Live Chat</button>
-            <button class="admin-nav-btn" onclick="showAdminTab('infoAdminTab', this)"><i class="fa-solid fa-chart-line"></i> Info & Rating</button>
+            <button class="admin-nav-btn" onclick="showAdminTab('linkEditTab', this)">
+                <i class="fa-solid fa-link"></i> Link Edit
+            </button>
+            <button class="admin-nav-btn active" onclick="showAdminTab('toolsTab', this)">
+                <i class="fa-solid fa-wrench"></i> Tools
+            </button>
+            <button class="admin-nav-btn" onclick="showAdminTab('infoTab', this)">
+                <i class="fa-solid fa-circle-info"></i> Info
+            </button>
+            <button class="admin-nav-btn" onclick="showAdminTab('liveChatTab', this)">
+                <i class="fa-solid fa-comments"></i> Live Chat
+            </button>
         </div>
 
-        <!-- MENU VAULT CONTENT MANAGEMENT -->
-        <div id="vaultTab" class="admin-section active">
-            <div class="section-header"><i class="fa-solid fa-plus-circle" style="color: var(--accent-pink);"></i> TAMBAH LINK BARU</div>
-            <input type="text" id="linkTitle" placeholder="Judul File / Game">
-            <input type="text" id="linkUrl" placeholder="URL Download Link">
-            <input type="text" id="linkImg" placeholder="URL Gambar Thumbnail (Opsional)">
-            <button class="btn-primary" onclick="addLink()"><i class="fa-solid fa-floppy-disk"></i> SIMPAN FILE</button>
+        <!-- TAB 1: LINK EDIT -->
+        <div id="linkEditTab" class="admin-section">
+            <div class="card-box">
+                <div class="card-title"><i class="fa-solid fa-plus-circle"></i> TAMBAH CONTENT LINK</div>
+                <span class="input-label">Judul File / Game</span>
+                <input type="text" id="linkTitle" placeholder="Ketik judul file...">
+                <span class="input-label">URL Download Link</span>
+                <input type="text" id="linkUrl" placeholder="https://...">
+                <span class="input-label">URL Thumbnail Gambar</span>
+                <input type="text" id="linkImg" placeholder="https://... (Opsional)">
+                <button class="btn-gradient" onclick="addLink()"><i class="fa-solid fa-floppy-disk"></i> SIMPAN CONTENT</button>
+            </div>
         </div>
 
-        <!-- MENU LIVE CHAT & BROADCAST ADMIN -->
-        <div id="liveChatTab" class="admin-section">
-            <div class="section-header"><i class="fa-solid fa-comments" style="color: var(--accent-blue);"></i> MONITOR LIVE CHAT VIEWER</div>
+        <!-- TAB 2: TOOLS (PERSIS PERINTAH & GAMBAR DISPLAY) -->
+        <div id="toolsTab" class="admin-section active">
             
-            <div class="chat-box-admin" id="adminChatBox"></div>
-
-            <hr style="border-color: var(--card-border); margin: 5px 0;">
-
-            <!-- TOOLS BROADCAST MESSAGE -->
-            <div class="section-header"><i class="fa-solid fa-bullhorn" style="color: var(--accent-pink);"></i> BROADCAST MESSAGE POP-UP</div>
-            <textarea id="broadcastMsg" rows="2" placeholder="Tuliskan pesan broadcast ke layar viewer..."></textarea>
-            <button class="btn-primary" onclick="sendBroadcast()"><i class="fa-solid fa-paper-plane"></i> SEBAR BROADCAST</button>
-        </div>
-
-        <!-- MENU INFO & REPUTASI RATING -->
-        <div id="infoAdminTab" class="admin-section">
-            <div class="section-header"><i class="fa-solid fa-location-dot" style="color: var(--accent-pink);"></i> INFO SISTEM</div>
-            <p style="font-size: 0.78rem; color: var(--text-gray);" id="sysTimeLocation">Loading sistem time...</p>
-
-            <div class="section-header" style="margin-top: 10px;"><i class="fa-solid fa-star" style="color: #ffb700;"></i> REPUTASI RATING WEB</div>
-            
-            <div class="rating-summary-box">
-                <div>
-                    <div style="font-size: 0.75rem; color: var(--text-gray);">Rata-rata Rating</div>
-                    <div class="avg-rating" id="avgRatingValue">0.0 <i class="fa-solid fa-star"></i></div>
-                </div>
-                <div style="font-size: 0.75rem; color: var(--text-gray);" id="totalReviewsCount">0 Ulasan</div>
+            <!-- TOOL 1: KIRIM POP-UP LIVE CHAT -->
+            <div class="card-box">
+                <div class="card-title"><i class="fa-solid fa-paper-plane"></i> Kirim Pop-up Live Chat</div>
+                <span class="input-label">Pesan Broadcast (Tampil 10 Detik di Viewer)</span>
+                <input type="text" id="broadcastMsg" placeholder="Ketik pesan broadcast...">
+                <button class="btn-gradient" onclick="sendBroadcast()">
+                    <i class="fa-solid fa-bullhorn"></i> KIRIM POP-UP STREAM
+                </button>
             </div>
 
-            <div class="section-header" style="margin-top: 5px;"><i class="fa-solid fa-comment-dots" style="color: var(--accent-blue);"></i> SARAN & KRITIK USER</div>
-            <div class="feedback-list" id="feedbackList"></div>
+            <!-- TOOL 2: KONVERSI GAMBAR KE DIRECT URL -->
+            <div class="card-box">
+                <div class="card-title"><i class="fa-solid fa-image"></i> Konversi Gambar Ke Direct URL</div>
+                <span class="input-label">Pilih Gambar dari Galeri</span>
+                <input type="file" id="imageFileInput" accept="image/*">
+                <button class="btn-gradient" onclick="processImageToUrl()">
+                    <i class="fa-solid fa-bolt"></i> PROSES GAMBAR
+                </button>
+                <div id="imageUrlOutput" class="output-box"></div>
+            </div>
+
+            <!-- TOOL 3: YOUTUBE DATA EXPORTER -->
+            <div class="card-box">
+                <div class="card-title"><i class="fa-brands fa-youtube"></i> YouTube Data Exporter</div>
+                <span class="input-label">Link Video YouTube</span>
+                <input type="text" id="ytUrlInput" placeholder="https://youtu.be/... atau https://www.youtube.com/...">
+                <button class="btn-gradient" onclick="exportYoutubeData()">
+                    <i class="fa-solid fa-download"></i> AMBIL DATA VIDEO
+                </button>
+                <div id="ytDataOutput" class="output-box"></div>
+            </div>
+
+        </div>
+
+        <!-- TAB 3: INFO & RATING -->
+        <div id="infoTab" class="admin-section">
+            <div class="card-box">
+                <div class="card-title"><i class="fa-solid fa-star" style="color: #ffb700;"></i> REPUTASI RATING WEB</div>
+                <div class="rating-summary-box">
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--text-gray);">Rata-rata Rating</div>
+                        <div class="avg-rating" id="avgRatingValue">0.0 <i class="fa-solid fa-star"></i></div>
+                    </div>
+                    <div style="font-size: 0.75rem; color: var(--text-gray);" id="totalReviewsCount">0 Ulasan</div>
+                </div>
+
+                <div class="card-title" style="margin-top: 5px;"><i class="fa-solid fa-comment-dots"></i> SARAN & KRITIK USER</div>
+                <div class="feedback-list" id="feedbackList"></div>
+            </div>
+        </div>
+
+        <!-- TAB 4: LIVE CHAT VIEWER MONITOR -->
+        <div id="liveChatTab" class="admin-section">
+            <div class="card-box">
+                <div class="card-title"><i class="fa-solid fa-comments"></i> MONITOR LIVE CHAT VIEWER</div>
+                <div class="chat-box-admin" id="adminChatBox"></div>
+            </div>
         </div>
 
     </div>
 
+    <!-- FIREBASE SERVICES -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
@@ -130,7 +270,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // ADD LINK DATA
+        // 1. TAMBAH LINK CONTENT
         function addLink() {
             const title = document.getElementById('linkTitle').value.trim();
             const url = document.getElementById('linkUrl').value.trim();
@@ -143,7 +283,7 @@
 
             db.ref('links').push({ title, url, img }, (err) => {
                 if(!err) {
-                    alert('Berhasil menambah link!');
+                    alert('Content berhasil ditambahkan!');
                     document.getElementById('linkTitle').value = '';
                     document.getElementById('linkUrl').value = '';
                     document.getElementById('linkImg').value = '';
@@ -151,22 +291,70 @@
             });
         }
 
-        // SEND BROADCAST
+        // 2. TOOL: KIRIM POP-UP LIVE CHAT
         function sendBroadcast() {
             const text = document.getElementById('broadcastMsg').value.trim();
-            if (!text) return;
+            if (!text) {
+                alert('Tuliskan pesan broadcast terlebih dahulu!');
+                return;
+            }
             db.ref('liveBroadcast').set({
                 text: text,
                 timestamp: Date.now()
             }, (err) => {
                 if(!err) {
-                    alert('Broadcast terkirim ke seluruh layar viewer!');
+                    alert('Pop-up Stream berhasil dikirim ke viewer!');
                     document.getElementById('broadcastMsg').value = '';
                 }
             });
         }
 
-        // MONITOR LIVE CHAT IN ADMIN
+        // 3. TOOL: KONVERSI GAMBAR KE DIRECT URL (BASE64 DATA URL)
+        function processImageToUrl() {
+            const fileInput = document.getElementById('imageFileInput');
+            const output = document.getElementById('imageUrlOutput');
+
+            if (fileInput.files.length === 0) {
+                alert('Pilih gambar dari galeri terlebih dahulu!');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                output.style.display = 'block';
+                output.innerHTML = `<strong>Direct Data URL:</strong><br><textarea rows="3" readonly>${e.target.result}</textarea>`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 4. TOOL: YOUTUBE DATA EXPORTER (AMBIL HIGH-RES THUMBNAIL)
+        function exportYoutubeData() {
+            const url = document.getElementById('ytUrlInput').value.trim();
+            const output = document.getElementById('ytDataOutput');
+
+            let videoId = "";
+            if (url.includes("youtu.be/")) {
+                videoId = url.split("youtu.be/")[1].split("?")[0];
+            } else if (url.includes("v=")) {
+                videoId = url.split("v=")[1].split("&")[0];
+            }
+
+            if (!videoId) {
+                alert('Link YouTube tidak valid!');
+                return;
+            }
+
+            const hqThumb = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+            output.style.display = 'block';
+            output.innerHTML = `
+                <strong>YouTube Video ID:</strong> ${videoId}<br>
+                <strong>Thumbnail URL:</strong><br>
+                <a href="${hqThumb}" target="_blank" style="color: var(--accent-blue);">${hqThumb}</a>
+            `;
+        }
+
+        // MONITOR CHAT VIEWER
         db.ref('chatMessages').limitToLast(50).on('value', (snapshot) => {
             const adminBox = document.getElementById('adminChatBox');
             adminBox.innerHTML = '';
@@ -184,7 +372,7 @@
             }
         });
 
-        // MONITOR RATINGS AND REPUTATION
+        // MONITOR RATING & REPUTATION
         db.ref('ratings').on('value', (snapshot) => {
             const ratings = snapshot.val();
             const list = document.getElementById('feedbackList');
@@ -219,12 +407,6 @@
             document.getElementById('avgRatingValue').innerHTML = `${avg} <i class="fa-solid fa-star"></i>`;
             document.getElementById('totalReviewsCount').innerText = `${count} Ulasan`;
         });
-
-        // SYSTEM TIME INFO
-        setInterval(() => {
-            const now = new Date();
-            document.getElementById('sysTimeLocation').innerText = `Waktu: ${now.toLocaleTimeString()} | Zona: ${Intl.DateTimeFormat().resolvedOptions().timeZone}`;
-        }, 1000);
 
         function escapeHtml(text) {
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
