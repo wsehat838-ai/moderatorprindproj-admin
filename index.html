@@ -40,7 +40,9 @@
         button.btn-blue { background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); border: none; font-weight: 700; cursor: pointer; font-family: 'Orbitron', sans-serif; }
 
         .chat-box-admin { height: 220px; background: #0d061a; border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
-        .chat-msg { font-size: 0.78rem; background: rgba(255, 255, 255, 0.03); padding: 6px 10px; border-radius: 6px; }
+        .chat-msg { font-size: 0.78rem; background: rgba(255, 255, 255, 0.03); padding: 8px 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .chat-msg-content { display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+        .btn-reply-chat { background: rgba(0, 210, 255, 0.15); border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; flex-shrink: 0; }
 
         .rating-summary-box { background: #0d061a; border-radius: 10px; padding: 12px; border: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; }
         .avg-rating { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; font-weight: 900; color: #ffb700; display: flex; align-items: center; gap: 6px; }
@@ -117,10 +119,15 @@
 
         </div>
 
-        <!-- TAB 3: LIVE CHAT VIEWER MONITORING -->
+        <!-- TAB 3: LIVE CHAT VIEWER MONITORING & BALAS -->
         <div id="liveChatTab" class="admin-section">
             <div class="section-header"><i class="fa-solid fa-comments" style="color: var(--accent-blue);"></i> MONITOR LIVE CHAT VIEWER</div>
             <div class="chat-box-admin" id="adminChatBox"></div>
+            
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
+                <input type="text" id="adminReplyInput" placeholder="Ketik pesan balasan untuk viewer...">
+                <button class="btn-primary" onclick="sendAdminBroadcast()"><i class="fa-solid fa-paper-plane"></i> KIRIM PESAN / POP-UP BROADCAST</button>
+            </div>
         </div>
 
         <!-- TAB 4: INFO & REPUTASI RATING -->
@@ -185,7 +192,7 @@
             });
         }
 
-        // TOOL 1: KONVERSI GAMBAR KE DIRECT DATA URL (BASE64 TANPA SERVER SERVER EXTERNAL)
+        // TOOL 1: KONVERSI GAMBAR KE DIRECT DATA URL (BASE64 TANPA SERVER EXTERNAL)
         function convertImageToDirectUrl() {
             const fileInput = document.getElementById('imageInput');
             
@@ -271,7 +278,7 @@
             alert('Judul, Thumbnail, dan Link Video berhasil ditempel ke menu Vault!');
         }
 
-        // MONITOR LIVE CHAT VIEWER
+        // MONITOR LIVE CHAT VIEWER & FITUR BALAS / BROADCAST
         db.ref('chatMessages').limitToLast(50).on('value', (snapshot) => {
             const adminBox = document.getElementById('adminChatBox');
             adminBox.innerHTML = '';
@@ -281,13 +288,43 @@
                     const msg = messages[key];
                     adminBox.innerHTML += `
                         <div class="chat-msg">
-                            <strong style="color: var(--accent-pink);">${escapeHtml(msg.user)}:</strong> ${escapeHtml(msg.text)}
+                            <div class="chat-msg-content">
+                                <strong style="color: var(--accent-pink);">${escapeHtml(msg.user)}:</strong> 
+                                <span>${escapeHtml(msg.text)}</span>
+                            </div>
+                            <button class="btn-reply-chat" onclick="replyUser('${escapeHtml(msg.user)}')"><i class="fa-solid fa-reply"></i> Balas</button>
                         </div>
                     `;
                 }
                 adminBox.scrollTop = adminBox.scrollHeight;
             }
         });
+
+        function replyUser(username) {
+            const input = document.getElementById('adminReplyInput');
+            input.value = `@${username} `;
+            input.focus();
+        }
+
+        function sendAdminBroadcast() {
+            const msg = document.getElementById('adminReplyInput').value.trim();
+            if (!msg) {
+                alert('Ketik pesan balasan terlebih dahulu!');
+                return;
+            }
+
+            db.ref('liveBroadcast').set({
+                text: msg,
+                timestamp: Date.now()
+            }, (err) => {
+                if (err) {
+                    alert('Gagal mengirim pesan!');
+                } else {
+                    document.getElementById('adminReplyInput').value = '';
+                    alert('Pesan berhasil terkirim sebagai pop-up broadcast ke viewer!');
+                }
+            });
+        }
 
         // MONITOR RATING & REPUTATION
         db.ref('ratings').on('value', (snapshot) => {
