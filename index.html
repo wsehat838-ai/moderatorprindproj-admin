@@ -47,8 +47,6 @@
 
         .vault-list-box { max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 5px; }
         .vault-item { background: #0d061a; border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .vault-item-left { display: flex; align-items: center; gap: 10px; overflow: hidden; flex: 1; }
-        .vault-item-thumb { width: 50px; height: 35px; border-radius: 6px; object-fit: cover; flex-shrink: 0; background: #22123f; }
         .vault-item-info { display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
         .vault-item-title { font-size: 0.8rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .vault-item-date { font-size: 0.68rem; color: var(--text-gray); }
@@ -426,15 +424,11 @@
             for (let key in links) {
                 const item = links[key];
                 const uploadDate = item.date || 'Waktu tidak diketahui';
-                const thumbSrc = item.img ? item.img : '';
                 listBox.innerHTML += `
                     <div class="vault-item">
-                        <div class="vault-item-left">
-                            ${thumbSrc ? `<img src="${escapeHtml(thumbSrc)}" class="vault-item-thumb" alt="thumb">` : `<div class="vault-item-thumb" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);font-size:0.6rem;">No Img</div>`}
-                            <div class="vault-item-info">
-                                <div class="vault-item-title">${escapeHtml(item.title)}</div>
-                                <div class="vault-item-date"><i class="fa-regular fa-clock"></i> ${uploadDate}</div>
-                            </div>
+                        <div class="vault-item-info">
+                            <div class="vault-item-title">${escapeHtml(item.title)}</div>
+                            <div class="vault-item-date"><i class="fa-regular fa-clock"></i> ${uploadDate}</div>
                         </div>
                         <button class="btn-del-vault" onclick="deleteVaultItem('${key}')" title="Hapus File"><i class="fa-solid fa-trash"></i> Hapus</button>
                     </div>
@@ -822,7 +816,7 @@
         function deleteRatingMessage(key) {
             if (confirm("Hapus ulasan ini secara permanen dari Firebase?")) {
                 db.ref('ratings/' + key).remove((err) => {
-                    if (err) alert("Gagal menangani penghapusan: " + err.message);
+                    if (err) alert("Gagal menghapus: " + err.message);
                 });
             }
         }
@@ -832,4 +826,4 @@
         }
     </script>
 </body>
-                                                                                                                                                            </html>
+</html>
