@@ -25,8 +25,10 @@
         .header-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 15px; display: flex; align-items: center; justify-content: space-between; }
         .header-title { font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--accent-pink); font-weight: 800; }
 
-        .admin-nav { display: flex; gap: 6px; background: #0d061a; border-radius: 12px; padding: 5px; border: 1px solid var(--card-border); overflow-x: auto; }
-        .admin-nav-btn { flex: 1; min-width: 75px; padding: 10px 0; border: none; background: transparent; color: var(--text-gray); font-size: 0.72rem; font-weight: 700; border-radius: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: 0.3s; white-space: nowrap; }
+        /* TAB NAVIGATION SCROLLABLE */
+        .admin-nav { display: flex; gap: 6px; background: #0d061a; border-radius: 12px; padding: 5px; border: 1px solid var(--card-border); overflow-x: auto; scrollbar-width: none; }
+        .admin-nav::-webkit-scrollbar { display: none; }
+        .admin-nav-btn { flex: 0 0 auto; min-width: 80px; padding: 10px 12px; border: none; background: transparent; color: var(--text-gray); font-size: 0.72rem; font-weight: 700; border-radius: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: 0.3s; white-space: nowrap; }
         .admin-nav-btn.active { background: linear-gradient(45deg, var(--accent-pink), var(--accent-purple)); color: #fff; }
 
         .admin-section { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 18px; display: none; flex-direction: column; gap: 12px; }
@@ -56,7 +58,6 @@
 
         .chat-box-admin { height: 220px; background: #0d061a; border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
         
-        /* ITEM ROW CHAT & RATING WITH DELETE BUTTON */
         .chat-msg-row { font-size: 0.78rem; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); padding: 8px 10px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
         .chat-msg-content { display: flex; align-items: center; gap: 8px; overflow: hidden; flex: 1; word-break: break-word; }
 
@@ -68,12 +69,19 @@
         .feedback-item-content { display: flex; flex-direction: column; gap: 2px; flex: 1; overflow: hidden; }
         .feedback-stars { color: #ffb700; margin-bottom: 2px; }
 
-        /* TOMBOL HAPUS SAMPAH MERAH UNTUK CHAT & RATING */
         .btn-delete-action { background: rgba(255, 0, 85, 0.15); border: 1px solid #ff0055; color: #ff0055; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.75rem; flex-shrink: 0; transition: all 0.2s ease; }
         .btn-delete-action:hover { background: #ff0055; color: #fff; box-shadow: 0 0 10px rgba(255, 0, 85, 0.5); }
 
         .output-box { display: none; background: #0d061a; border: 1px solid var(--accent-purple); border-radius: 10px; padding: 12px; font-size: 0.78rem; gap: 8px; flex-direction: column; margin-top: 5px; }
         .btn-group { display: flex; gap: 6px; margin-top: 5px; }
+
+        /* STYLING KHUSUS TAB CONTROL */
+        .control-card { background: #0d061a; border: 1px solid var(--card-border); padding: 12px; border-radius: 10px; display: flex; flex-direction: column; gap: 8px; }
+        .color-picker-box { display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.03); padding: 8px; border-radius: 8px; border: 1px solid var(--card-border); }
+        .color-picker-box input[type="color"] { width: 45px; height: 35px; padding: 0; border: none; cursor: pointer; background: transparent; border-radius: 5px; }
+        .status-badge { font-size: 0.75rem; padding: 3px 8px; border-radius: 6px; font-weight: 700; text-align: center; }
+        .status-badge.open { background: rgba(0, 255, 102, 0.15); color: #00ff66; border: 1px solid #00ff66; }
+        .status-badge.closed { background: rgba(255, 0, 85, 0.15); color: #ff0055; border: 1px solid #ff0055; }
     </style>
 </head>
 <body>
@@ -84,15 +92,16 @@
             <div class="header-title"><i class="fa-solid fa-user-shield"></i> PRINDAPAN ADMIN</div>
         </div>
 
-        <!-- TAB NAVIGATION -->
+        <!-- TAB NAVIGATION (5 TAB - BISA DI-SCROLL) -->
         <div class="admin-nav">
             <button class="admin-nav-btn active" onclick="showAdminTab('vaultTab', this)"><i class="fa-solid fa-folder"></i> Vault</button>
             <button class="admin-nav-btn" onclick="showAdminTab('toolsTab', this)"><i class="fa-solid fa-wrench"></i> Tools</button>
             <button class="admin-nav-btn" onclick="showAdminTab('liveChatTab', this)"><i class="fa-solid fa-comments"></i> Live Chat</button>
             <button class="admin-nav-btn" onclick="showAdminTab('infoAdminTab', this)"><i class="fa-solid fa-chart-line"></i> Rating</button>
+            <button class="admin-nav-btn" onclick="showAdminTab('controlTab', this)"><i class="fa-solid fa-sliders"></i> Control</button>
         </div>
 
-        <!-- TAB 1: VAULT CONTENT MANAGEMENT + LIST UPLOADED FILES -->
+        <!-- TAB 1: VAULT CONTENT MANAGEMENT -->
         <div id="vaultTab" class="admin-section active">
             <div class="section-header"><div class="section-header-left"><i class="fa-solid fa-plus-circle" style="color: var(--accent-pink);"></i> TAMBAH LINK BARU</div></div>
             <input type="text" id="linkTitle" placeholder="Judul File / Game">
@@ -108,8 +117,6 @@
 
         <!-- TAB 2: TOOLS UTILITAS -->
         <div id="toolsTab" class="admin-section">
-            
-            <!-- FITUR 1: KONVERSI GAMBAR KE DIRECT LINK -->
             <div class="section-header"><div class="section-header-left"><i class="fa-solid fa-image" style="color: var(--accent-pink);"></i> KONVERSI GAMBAR KE DIRECT LINK</div></div>
             <input type="file" id="imageInput" accept="image/*">
             <button class="btn-primary" onclick="convertImageToDirectUrl()"><i class="fa-solid fa-bolt"></i> PROSES GAMBAR</button>
@@ -125,7 +132,6 @@
 
             <hr style="border-color: var(--card-border); margin: 8px 0;">
 
-            <!-- FITUR 2: YOUTUBE DATA EXPORTER -->
             <div class="section-header"><div class="section-header-left"><i class="fa-brands fa-youtube" style="color: #ff0055;"></i> YOUTUBE DATA EXPORTER</div></div>
             <input type="text" id="ytUrlInput" placeholder="Tempelkan link video YouTube di sini...">
             <button class="btn-primary" onclick="extractYoutubeData()"><i class="fa-solid fa-magnifying-glass"></i> EKSTRAK DATA VIDEO</button>
@@ -142,10 +148,9 @@
                 
                 <button class="btn-blue" onclick="applyYtDataToVault()"><i class="fa-solid fa-arrow-right-to-bracket"></i> Gunakan Data Ini Di Vault</button>
             </div>
-
         </div>
 
-        <!-- TAB 3: LIVE CHAT VIEWER MONITORING + ONLINE COUNTER -->
+        <!-- TAB 3: LIVE CHAT VIEWER MONITORING -->
         <div id="liveChatTab" class="admin-section">
             <div class="section-header">
                 <div class="section-header-left">
@@ -180,6 +185,74 @@
             <div class="feedback-list" id="feedbackList"></div>
         </div>
 
+        <!-- TAB 5: CONTROL (FITUR AKSES, PRANK, DARK/LIGHT, COLOR PICKER) -->
+        <div id="controlTab" class="admin-section">
+            
+            <!-- FITUR 1 (PALING ATAS): OPEN/CLOSE AKSES WEB VIEWER -->
+            <div class="control-card">
+                <div class="section-header">
+                    <div class="section-header-left">
+                        <i class="fa-solid fa-power-off" style="color: #ff0055;"></i> AKSES WEB VIEWER
+                    </div>
+                    <div id="serverStatusBadge" class="status-badge open">ONLINE</div>
+                </div>
+                <p style="font-size: 0.72rem; color: var(--text-gray);">Tutup akses penuh web viewer dengan tampilan khusus "Server tutup, kembali lagi tahun depan".</p>
+                <div class="btn-group">
+                    <button class="btn-primary" style="background: #00c853;" onclick="setServerAccess(true)">
+                        <i class="fa-solid fa-door-open"></i> OPEN AKSES
+                    </button>
+                    <button class="btn-primary" style="background: #ff0055;" onclick="setServerAccess(false)">
+                        <i class="fa-solid fa-door-closed"></i> CLOSE AKSES
+                    </button>
+                </div>
+            </div>
+
+            <hr style="border-color: var(--card-border); margin: 2px 0;">
+
+            <!-- FITUR 2: SPAM EMOJI HALLOWEEN PRANK (UKURAN RANDOM) -->
+            <div class="control-card">
+                <div class="section-header">
+                    <div class="section-header-left">
+                        <i class="fa-solid fa-ghost" style="color: #ff6600;"></i> SPAM HALLOWEEN EMOJI PRANK
+                    </div>
+                </div>
+                <p style="font-size: 0.72rem; color: var(--text-gray);">Hujani seluruh layar viewer dengan emoji Halloween acak (berbagai ukuran besar/kecil).</p>
+                <button class="btn-primary" style="background: linear-gradient(45deg, #ff6600, #9900cc);" onclick="triggerHalloweenPrank()">
+                    <i class="fa-solid fa-spaghetti-monster-flying"></i> SEBAR HUJAN EMOJI HALLOWEEN!
+                </button>
+            </div>
+
+            <hr style="border-color: var(--card-border); margin: 2px 0;">
+
+            <!-- FITUR 3 & 4: TEMA BACKGROUND (DARK, LIGHT, & COLOR PICKER) -->
+            <div class="control-card">
+                <div class="section-header">
+                    <div class="section-header-left">
+                        <i class="fa-solid fa-palette" style="color: var(--accent-blue);"></i> KONTROL TEMA BACKGROUND VIEWER
+                    </div>
+                </div>
+                
+                <!-- Quick Mode Dark / Light -->
+                <p style="font-size: 0.72rem; color: var(--text-gray);">Quick Theme Switch:</p>
+                <div class="btn-group">
+                    <button class="btn-secondary" onclick="setViewerThemeMode('dark')">
+                        <i class="fa-solid fa-moon"></i> Dark Mode
+                    </button>
+                    <button class="btn-secondary" style="background: #e6e6e6; color: #000; border-color: #ccc;" onclick="setViewerThemeMode('light')">
+                        <i class="fa-solid fa-sun" style="color: #ff9900;"></i> Light Mode
+                    </button>
+                </div>
+
+                <!-- Custom Color Picker -->
+                <p style="font-size: 0.72rem; color: var(--text-gray); margin-top: 6px;">Custom Color Picker:</p>
+                <div class="color-picker-box">
+                    <input type="color" id="bgCustomPicker" value="#07040d" onchange="applyCustomBgColor(this.value)">
+                    <span style="font-size: 0.75rem; color: var(--text-gray);">Pilih warna background kustom viewer</span>
+                </div>
+            </div>
+
+        </div>
+
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -205,7 +278,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // REALTIME PRESENCE (DETEKSI JUMLAH ORANG ONLINE)
+        // REALTIME PRESENCE
         const myPresenceRef = db.ref('presence/' + db.ref().push().key);
         const connectedRef = db.ref('.info/connected');
         
@@ -221,7 +294,71 @@
             document.getElementById('onlineCountText').innerText = `${count} Online`;
         });
 
-        // SIMPAN LINK DATA KE FIREBASE DENGAN TIMESTAMP TANGGAL UPLOAD
+        // MONITOR STATUS AKSES SERVER REALTIME
+        db.ref('serverAccess').on('value', (snapshot) => {
+            const isOpen = snapshot.val() !== false; // default true jika null
+            const badge = document.getElementById('serverStatusBadge');
+            if(isOpen) {
+                badge.innerText = 'ONLINE';
+                badge.className = 'status-badge open';
+            } else {
+                badge.innerText = 'CLOSED';
+                badge.className = 'status-badge closed';
+            }
+        });
+
+        // FITUR 1: SET AKSES WEB VIEWER (OPEN / CLOSE)
+        function setServerAccess(isOpen) {
+            const statusText = isOpen ? "MEMBUKA" : "MENUTUP";
+            if (confirm(`Yakin ingin ${statusText} akses web viewer?`)) {
+                db.ref('serverAccess').set(isOpen, (err) => {
+                    if (!err) {
+                        alert(`Akses web viewer berhasil di-set ke: ${isOpen ? 'OPEN' : 'CLOSE'}`);
+                    } else {
+                        alert('Gagal mengubah status akses!');
+                    }
+                });
+            }
+        }
+
+        // FITUR 2: SPAM HUJAN EMOJI HALLOWEEN
+        function triggerHalloweenPrank() {
+            if (confirm("Kirim hujan emoji Halloween ke seluruh viewer online?")) {
+                db.ref('activePrank').set({
+                    type: 'halloween_rain',
+                    timestamp: Date.now()
+                }, (err) => {
+                    if (!err) {
+                        alert('Prank Halloween berhasil dikirim!');
+                    } else {
+                        alert('Gagal mengirim prank!');
+                    }
+                });
+            }
+        }
+
+        // FITUR 3: SET DARK / LIGHT MODE VIEWER
+        function setViewerThemeMode(mode) {
+            const color = (mode === 'dark') ? '#07040d' : '#ffffff';
+            db.ref('viewerTheme').set({
+                mode: mode,
+                bgColor: color,
+                timestamp: Date.now()
+            }, (err) => {
+                if(!err) alert(`Theme viewer berhasil diubah ke ${mode.toUpperCase()} mode!`);
+            });
+        }
+
+        // FITUR 4: COLOR PICKER CUSTOM BACKGROUND VIEWER
+        function applyCustomBgColor(hexColor) {
+            db.ref('viewerTheme').set({
+                mode: 'custom',
+                bgColor: hexColor,
+                timestamp: Date.now()
+            });
+        }
+
+        // SIMPAN LINK DATA KE FIREBASE
         function addLink() {
             const title = document.getElementById('linkTitle').value.trim();
             const url = document.getElementById('linkUrl').value.trim();
@@ -247,7 +384,7 @@
             });
         }
 
-        // LOAD & RENDER DAFTAR FILE UPLOADED DI VAULT
+        // LOAD & RENDER DAFTAR FILE UPLOADED
         db.ref('links').on('value', (snapshot) => {
             const listBox = document.getElementById('vaultListBox');
             listBox.innerHTML = '';
@@ -286,7 +423,7 @@
             }
         }
 
-        // TOOL 1: KONVERSI GAMBAR KE DIRECT DATA URL (BASE64 TANPA SERVER EXTERNAL)
+        // TOOL 1: KONVERSI GAMBAR KE DIRECT DATA URL
         function convertImageToDirectUrl() {
             const fileInput = document.getElementById('imageInput');
             
@@ -372,7 +509,7 @@
             alert('Judul, Thumbnail, dan Link Video berhasil ditempel ke menu Vault!');
         }
 
-        // MONITOR LIVE CHAT VIEWER DENGAN TOMBOL HAPUS SAMPAH MERAH
+        // MONITOR LIVE CHAT VIEWER DENGAN TOMBOL HAPUS
         db.ref('chatMessages').limitToLast(50).on('value', (snapshot) => {
             const adminBox = document.getElementById('adminChatBox');
             adminBox.innerHTML = '';
@@ -400,7 +537,6 @@
             }
         });
 
-        // FUNGSI HAPUS PESAN CHAT PERMANEN
         function deleteChatMessage(key) {
             if (confirm("Hapus pesan ini secara permanen dari Firebase?")) {
                 db.ref('chatMessages/' + key).remove((err) => {
@@ -429,7 +565,7 @@
             });
         }
 
-        // MONITOR RATING & REPUTATION DENGAN TOMBOL HAPUS SAMPAH MERAH
+        // MONITOR RATING & REPUTATION DENGAN TOMBOL HAPUS
         db.ref('ratings').on('value', (snapshot) => {
             const ratings = snapshot.val();
             const list = document.getElementById('feedbackList');
@@ -473,7 +609,6 @@
             document.getElementById('totalReviewsCount').innerText = `${count} Ulasan`;
         });
 
-        // FUNGSI HAPUS RATING PERMANEN
         function deleteRatingMessage(key) {
             if (confirm("Hapus ulasan ini secara permanen dari Firebase?")) {
                 db.ref('ratings/' + key).remove((err) => {
@@ -487,4 +622,4 @@
         }
     </script>
 </body>
-                </html>
+    </html>
