@@ -18,12 +18,82 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--bg-dark); color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
         
-        .admin-container { width: 100%; max-width: 650px; display: flex; flex-direction: column; gap: 15px; }
+        /* NEON BERPUTAR DI PINGGIR LAYAR PAGE */
+        body {
+            background-color: var(--bg-dark);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 25px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border: 4px solid transparent;
+            border-image: linear-gradient(0deg, var(--accent-pink), var(--accent-blue), var(--accent-purple), var(--accent-pink)) 1;
+            box-shadow: inset 0 0 15px rgba(255, 0, 119, 0.4), 0 0 15px rgba(0, 210, 255, 0.4);
+            pointer-events: none;
+            z-index: 9999;
+            animation: screenNeonRotate 4s linear infinite;
+        }
+        @keyframes screenNeonRotate {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+        
+        .admin-container { width: 100%; max-width: 650px; display: flex; flex-direction: column; gap: 15px; z-index: 1; }
 
-        .header-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 15px; display: flex; align-items: center; justify-content: space-between; }
-        .header-title { font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--accent-pink); font-weight: 800; }
+        /* KOTAK TITLE DENGAN NEON BERPUTAR & TEKS BERKILAU */
+        .header-box {
+            position: relative;
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .header-box::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, var(--accent-pink), var(--accent-blue), var(--accent-purple), var(--accent-pink));
+            background-size: 400%;
+            z-index: -1;
+            border-radius: 16px;
+            animation: neonBorderMove 3s linear infinite;
+        }
+        @keyframes neonBorderMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .header-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, #ff0077, #00d2ff, #ffb700, #ff0077);
+            background-size: 300% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textShimmer 3s ease infinite;
+            text-shadow: 0 0 10px rgba(255, 0, 119, 0.5);
+        }
+        @keyframes textShimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
         .admin-nav { display: flex; gap: 6px; background: #0d061a; border-radius: 12px; padding: 5px; border: 1px solid var(--card-border); overflow-x: auto; scrollbar-width: none; }
         .admin-nav::-webkit-scrollbar { display: none; }
@@ -535,7 +605,6 @@
             alert('Judul, Thumbnail, dan Link Video berhasil ditempel ke menu Vault!');
         }
 
-        // TOOL 3: CONVERTER MEDIA DIRECT (COBALT API)
         let currentConvertVideoId = "";
         function processMediaConvert() {
             const inputUrl = document.getElementById('convertUrlInput').value.trim();
@@ -578,7 +647,6 @@
             });
         }
 
-        // TOOL 4: CARI VIDEO YOUTUBE & EKSTRAK INFO
         function handleYtSearchEnter(e) {
             if(e.key === 'Enter') searchYoutubeVideos();
         }
@@ -593,7 +661,6 @@
 
             resultsContainer.innerHTML = '<p style="font-size:0.75rem; color: var(--accent-blue); text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Mencari video YouTube...</p>';
 
-            // Menggunakan Invidious Public API yang bebas CORS
             fetch(`https://inv.tux.pizza/api/v1/search?q=${encodeURIComponent(query)}&type=video`)
             .then(res => {
                 if(!res.ok) throw new Error("API error");
@@ -613,7 +680,6 @@
                     const thumb = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
                     const channel = item.author || 'Unknown Channel';
                     
-                    // Format tanggal upload
                     let uploadDateStr = 'Tanggal tidak diketahui';
                     if(item.published) {
                         const dateObj = new Date(item.published * 1000);
@@ -650,7 +716,6 @@
                 });
             })
             .catch(() => {
-                // Fallback otomatis jika instance server 1 error
                 fetch(`https://api.piped.video/search?q=${encodeURIComponent(query)}&filter=videos`)
                 .then(res => res.json())
                 .then(data => {
@@ -826,4 +891,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
