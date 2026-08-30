@@ -47,6 +47,8 @@
 
         .vault-list-box { max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 5px; }
         .vault-item { background: #0d061a; border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .vault-item-left { display: flex; align-items: center; gap: 10px; overflow: hidden; flex: 1; }
+        .vault-item-thumb { width: 50px; height: 35px; border-radius: 6px; object-fit: cover; flex-shrink: 0; background: #22123f; }
         .vault-item-info { display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
         .vault-item-title { font-size: 0.8rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .vault-item-date { font-size: 0.68rem; color: var(--text-gray); }
@@ -78,6 +80,7 @@
         .status-badge.open { background: rgba(0, 255, 102, 0.15); color: #00ff66; border: 1px solid #00ff66; }
         .status-badge.closed { background: rgba(255, 0, 85, 0.15); color: #ff0055; border: 1px solid #ff0055; }
 
+        /* ITEM HASIL PENCARIAN YOUTUBE */
         .yt-search-card { background: #0d061a; border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
         .yt-card-header { display: flex; gap: 10px; }
         .yt-card-thumb { width: 110px; height: 62px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
@@ -121,6 +124,7 @@
         <!-- TAB 2: TOOLS -->
         <div id="toolsTab" class="admin-section">
             
+            <!-- TOOL 1: KONVERSI GAMBAR -->
             <div class="section-header"><div class="section-header-left"><i class="fa-solid fa-image" style="color: var(--accent-pink);"></i> KONVERSI GAMBAR KE DIRECT LINK</div></div>
             <input type="file" id="imageInput" accept="image/*">
             <button class="btn-primary" onclick="convertImageToDirectUrl()"><i class="fa-solid fa-bolt"></i> PROSES GAMBAR</button>
@@ -136,6 +140,7 @@
 
             <hr style="border-color: var(--card-border); margin: 8px 0;">
 
+            <!-- TOOL 2: YOUTUBE DATA EXPORTER -->
             <div class="section-header"><div class="section-header-left"><i class="fa-brands fa-youtube" style="color: #ff0055;"></i> YOUTUBE DATA EXPORTER</div></div>
             <input type="text" id="ytUrlInput" placeholder="Tempelkan link video YouTube di sini...">
             <button class="btn-primary" onclick="extractYoutubeData()"><i class="fa-solid fa-magnifying-glass"></i> EKSTRAK DATA VIDEO</button>
@@ -162,6 +167,7 @@
 
             <hr style="border-color: var(--card-border); margin: 8px 0;">
 
+            <!-- TOOL 3: CONVERTER MEDIA -->
             <div class="section-header"><div class="section-header-left"><i class="fa-solid fa-arrows-rotate" style="color: var(--accent-blue);"></i> KONVERSI VIDEO TO MP3 / OPUS / MP4</div></div>
             <input type="text" id="convertUrlInput" placeholder="Paste Link YouTube untuk Konversi...">
             <button class="btn-primary" onclick="processMediaConvert()"><i class="fa-solid fa-gear"></i> PROSES KONVERSI</button>
@@ -177,6 +183,7 @@
 
             <hr style="border-color: var(--card-border); margin: 8px 0;">
 
+            <!-- TOOL 4: CARI VIDEO YOUTUBE & EKSTRAK INFO -->
             <div class="section-header"><div class="section-header-left"><i class="fa-brands fa-youtube" style="color: #ff0000;"></i> CARI VIDEO YOUTUBE</div></div>
             <input type="text" id="ytSearchQueryInput" placeholder="Ketik kata kunci / judul video..." onkeypress="handleYtSearchEnter(event)">
             <button class="btn-primary" style="background: linear-gradient(45deg, #ff0000, #ff5500); color: #fff;" onclick="searchYoutubeVideos()"><i class="fa-solid fa-magnifying-glass"></i> CARI VIDEO YT</button>
@@ -419,11 +426,15 @@
             for (let key in links) {
                 const item = links[key];
                 const uploadDate = item.date || 'Waktu tidak diketahui';
+                const thumbSrc = item.img ? item.img : '';
                 listBox.innerHTML += `
                     <div class="vault-item">
-                        <div class="vault-item-info">
-                            <div class="vault-item-title">${escapeHtml(item.title)}</div>
-                            <div class="vault-item-date"><i class="fa-regular fa-clock"></i> ${uploadDate}</div>
+                        <div class="vault-item-left">
+                            ${thumbSrc ? `<img src="${escapeHtml(thumbSrc)}" class="vault-item-thumb" alt="thumb">` : `<div class="vault-item-thumb" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);font-size:0.6rem;">No Img</div>`}
+                            <div class="vault-item-info">
+                                <div class="vault-item-title">${escapeHtml(item.title)}</div>
+                                <div class="vault-item-date"><i class="fa-regular fa-clock"></i> ${uploadDate}</div>
+                            </div>
                         </div>
                         <button class="btn-del-vault" onclick="deleteVaultItem('${key}')" title="Hapus File"><i class="fa-solid fa-trash"></i> Hapus</button>
                     </div>
@@ -530,6 +541,7 @@
             alert('Judul, Thumbnail, dan Link Video berhasil ditempel ke menu Vault!');
         }
 
+        // TOOL 3: CONVERTER MEDIA DIRECT (COBALT API)
         let currentConvertVideoId = "";
         function processMediaConvert() {
             const inputUrl = document.getElementById('convertUrlInput').value.trim();
@@ -572,6 +584,7 @@
             });
         }
 
+        // TOOL 4: CARI VIDEO YOUTUBE & EKSTRAK INFO
         function handleYtSearchEnter(e) {
             if(e.key === 'Enter') searchYoutubeVideos();
         }
@@ -586,6 +599,7 @@
 
             resultsContainer.innerHTML = '<p style="font-size:0.75rem; color: var(--accent-blue); text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Mencari video YouTube...</p>';
 
+            // Menggunakan Invidious Public API yang bebas CORS
             fetch(`https://inv.tux.pizza/api/v1/search?q=${encodeURIComponent(query)}&type=video`)
             .then(res => {
                 if(!res.ok) throw new Error("API error");
@@ -605,6 +619,7 @@
                     const thumb = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
                     const channel = item.author || 'Unknown Channel';
                     
+                    // Format tanggal upload
                     let uploadDateStr = 'Tanggal tidak diketahui';
                     if(item.published) {
                         const dateObj = new Date(item.published * 1000);
@@ -641,6 +656,7 @@
                 });
             })
             .catch(() => {
+                // Fallback otomatis jika instance server 1 error
                 fetch(`https://api.piped.video/search?q=${encodeURIComponent(query)}&filter=videos`)
                 .then(res => res.json())
                 .then(data => {
@@ -806,7 +822,7 @@
         function deleteRatingMessage(key) {
             if (confirm("Hapus ulasan ini secara permanen dari Firebase?")) {
                 db.ref('ratings/' + key).remove((err) => {
-                    if (err) alert("Gagal menghapus: " + err.message);
+                    if (err) alert("Gagal menangani penghapusan: " + err.message);
                 });
             }
         }
@@ -816,4 +832,4 @@
         }
     </script>
 </body>
-                                                                            </html>
+                                                                                                                                                            </html>
