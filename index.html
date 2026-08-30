@@ -41,8 +41,9 @@
 
         .chat-box-admin { height: 220px; background: #0d061a; border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
         .chat-msg { font-size: 0.78rem; background: rgba(255, 255, 255, 0.03); padding: 8px 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-        .chat-msg-content { display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
-        .btn-reply-chat { background: rgba(0, 210, 255, 0.15); border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; flex-shrink: 0; }
+        .chat-msg-content { display: flex; flex-direction: column; gap: 2px; overflow: hidden; word-break: break-word; }
+        .btn-del-chat { background: rgba(255, 0, 85, 0.2); border: 1px solid #ff0055; color: #ff0055; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; flex-shrink: 0; }
+        .btn-del-chat:hover { background: #ff0055; color: #fff; }
 
         .rating-summary-box { background: #0d061a; border-radius: 10px; padding: 12px; border: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; }
         .avg-rating { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; font-weight: 900; color: #ffb700; display: flex; align-items: center; gap: 6px; }
@@ -119,14 +120,14 @@
 
         </div>
 
-        <!-- TAB 3: LIVE CHAT VIEWER MONITORING & BALAS -->
+        <!-- TAB 3: LIVE CHAT VIEWER MONITORING & HAPUS PESAN -->
         <div id="liveChatTab" class="admin-section">
             <div class="section-header"><i class="fa-solid fa-comments" style="color: var(--accent-blue);"></i> MONITOR LIVE CHAT VIEWER</div>
             <div class="chat-box-admin" id="adminChatBox"></div>
             
             <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
-                <input type="text" id="adminReplyInput" placeholder="Ketik pesan balasan untuk viewer...">
-                <button class="btn-primary" onclick="sendAdminBroadcast()"><i class="fa-solid fa-paper-plane"></i> KIRIM PESAN / POP-UP BROADCAST</button>
+                <input type="text" id="adminBroadcastInput" placeholder="Ketik pesan broadcast untuk dikirim ke viewer...">
+                <button class="btn-primary" onclick="sendAdminBroadcast()"><i class="fa-solid fa-paper-plane"></i> KIRIM POP-UP BROADCAST</button>
             </div>
         </div>
 
@@ -278,7 +279,7 @@
             alert('Judul, Thumbnail, dan Link Video berhasil ditempel ke menu Vault!');
         }
 
-        // MONITOR LIVE CHAT VIEWER & FITUR BALAS / BROADCAST
+        // MONITOR LIVE CHAT VIEWER & FITUR HAPUS PESAN SPESIFIK
         db.ref('chatMessages').limitToLast(50).on('value', (snapshot) => {
             const adminBox = document.getElementById('adminChatBox');
             adminBox.innerHTML = '';
@@ -292,7 +293,7 @@
                                 <strong style="color: var(--accent-pink);">${escapeHtml(msg.user)}:</strong> 
                                 <span>${escapeHtml(msg.text)}</span>
                             </div>
-                            <button class="btn-reply-chat" onclick="replyUser('${escapeHtml(msg.user)}')"><i class="fa-solid fa-reply"></i> Balas</button>
+                            <button class="btn-del-chat" onclick="deleteChatMessage('${key}')" title="Hapus Pesan"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     `;
                 }
@@ -300,16 +301,22 @@
             }
         });
 
-        function replyUser(username) {
-            const input = document.getElementById('adminReplyInput');
-            input.value = `@${username} `;
-            input.focus();
+        function deleteChatMessage(messageKey) {
+            if (confirm('Yakin ingin menghapus pesan ini dari chat viewer?')) {
+                db.ref('chatMessages/' + messageKey).remove((err) => {
+                    if (err) {
+                        alert('Gagal menghapus pesan!');
+                    } else {
+                        alert('Pesan berhasil dihapus!');
+                    }
+                });
+            }
         }
 
         function sendAdminBroadcast() {
-            const msg = document.getElementById('adminReplyInput').value.trim();
+            const msg = document.getElementById('adminBroadcastInput').value.trim();
             if (!msg) {
-                alert('Ketik pesan balasan terlebih dahulu!');
+                alert('Ketik pesan broadcast terlebih dahulu!');
                 return;
             }
 
@@ -320,7 +327,7 @@
                 if (err) {
                     alert('Gagal mengirim pesan!');
                 } else {
-                    document.getElementById('adminReplyInput').value = '';
+                    document.getElementById('adminBroadcastInput').value = '';
                     alert('Pesan berhasil terkirim sebagai pop-up broadcast ke viewer!');
                 }
             });
