@@ -532,7 +532,7 @@
             alert('Judul, Thumbnail, dan Link Video berhasil ditempel ke menu Vault!');
         }
 
-        // FIX TOOL 3: CONVERTER STABIL DENGAN PROVIDER YTMP3 / Y2MATE REDIRECT
+        // PERBAIKAN TOOL 3: CONVERTER MEDIA FIX
         let currentConvertVideoId = "";
         function processMediaConvert() {
             const inputUrl = document.getElementById('convertUrlInput').value.trim();
@@ -547,18 +547,19 @@
 
         function downloadFormat(type) {
             if(!currentConvertVideoId) return;
-            let downloadUrl = "";
+            const videoUrl = `https://www.youtube.com/watch?v=${currentConvertVideoId}`;
+            let targetUrl = "";
             if(type === 'mp3') {
-                downloadUrl = `https://y2mate.is/en/youtube-to-mp3/${currentConvertVideoId}`;
+                targetUrl = `https://y2mate.nu/en-123/youtube-to-mp3?url=${encodeURIComponent(videoUrl)}`;
             } else if(type === 'opus') {
-                downloadUrl = `https://cobalt.tools/`;
+                targetUrl = `https://cobalt.tools/`;
             } else {
-                downloadUrl = `https://y2mate.is/en/youtube-to-mp4/${currentConvertVideoId}`;
+                targetUrl = `https://y2mate.nu/en-123/youtube-to-mp4?url=${encodeURIComponent(videoUrl)}`;
             }
-            window.open(downloadUrl, '_blank');
+            window.open(targetUrl, '_blank');
         }
 
-        // FIX TOOL 4: CARI MUSIK DENGAN ITUNES API (100% BEBAS CORS + REALTIME AUDIO PLAYER)
+        // PERBAIKAN TOOL 4: CARI MUSIK FULL SONG + DIRECT DOWNLOAD (BEBAS 404)
         function handleMusicSearchEnter(e) {
             if(e.key === 'Enter') searchMusic();
         }
@@ -571,22 +572,31 @@
                 return;
             }
 
-            resultsContainer.innerHTML = '<p style="font-size:0.75rem; color: var(--accent-blue); text-align:center;">Mencari lagu...</p>';
+            resultsContainer.innerHTML = '<p style="font-size:0.75rem; color: var(--accent-blue); text-align:center;">Mencari lagu full duration...</p>';
 
-            fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=6`)
+            fetch(`https://vid.puffyan.us/api/v1/search?q=${encodeURIComponent(query)}&type=video`)
             .then(res => res.json())
             .then(data => {
                 resultsContainer.innerHTML = '';
-                if(!data.results || data.results.length === 0) {
+                if(!data || data.length === 0) {
+                    return fetch(`https://invidious.drgns.space/api/v1/search?q=${encodeURIComponent(query)}&type=video`).then(r => r.json());
+                }
+                return data;
+            })
+            .then(data => {
+                if(!data || data.length === 0) {
                     resultsContainer.innerHTML = '<p style="font-size:0.75rem; color: var(--text-gray); text-align:center;">Lagu tidak ditemukan!</p>';
                     return;
                 }
-                
-                data.results.forEach(item => {
-                    const title = item.trackName + " - " + item.artistName;
-                    const thumb = item.artworkUrl100.replace('100x100bb', '300x300bb');
-                    const audioUrl = item.previewUrl;
-                    const queryYt = encodeURIComponent(title);
+
+                const items = data.slice(0, 5);
+                resultsContainer.innerHTML = '';
+
+                items.forEach(item => {
+                    const videoId = item.videoId;
+                    const title = item.title;
+                    const thumb = item.videoThumbnails ? item.videoThumbnails.find(t => t.quality === 'medium')?.url || item.videoThumbnails[0].url : `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                    const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
 
                     resultsContainer.innerHTML += `
                         <div class="music-item">
@@ -595,19 +605,21 @@
                                 <div class="music-item-title">${escapeHtml(title)}</div>
                             </div>
                             
-                            <!-- DIRECT AUDIO PLAYER AUDIO PREVIEW -->
-                            <audio controls src="${audioUrl}"></audio>
+                            <audio controls style="width:100%; margin-top:5px;">
+                                <source src="https://pipedapi.kavin.rocks/stream/${videoId}" type="audio/mp3">
+                                Browser kamu tidak mendukung audio player.
+                            </audio>
 
-                            <div class="btn-group">
-                                <button class="btn-secondary" style="font-size:0.7rem; padding:6px;" onclick="window.open('https://y2mate.is/en/search/${queryYt}', '_blank')"><i class="fa-solid fa-download"></i> Unduh MP3</button>
-                                <button class="btn-blue" style="font-size:0.7rem; padding:6px;" onclick="window.open('https://y2mate.is/en/search/${queryYt}', '_blank')"><i class="fa-solid fa-download"></i> Unduh MP4</button>
+                            <div class="btn-group" style="margin-top:6px;">
+                                <button class="btn-secondary" style="font-size:0.7rem; padding:8px;" onclick="window.open('https://y2mate.nu/en-123/youtube-to-mp3?url=${encodeURIComponent(videoUrl)}', '_blank')"><i class="fa-solid fa-download"></i> Unduh MP3 Full</button>
+                                <button class="btn-blue" style="font-size:0.7rem; padding:8px;" onclick="window.open('https://y2mate.nu/en-123/youtube-to-mp4?url=${encodeURIComponent(videoUrl)}', '_blank')"><i class="fa-solid fa-download"></i> Unduh MP4 Video</button>
                             </div>
                         </div>
                     `;
                 });
             })
             .catch(err => {
-                resultsContainer.innerHTML = '<p style="font-size:0.75rem; color: #ff0055; text-align:center;">Gagal memuat hasil pencarian.</p>';
+                resultsContainer.innerHTML = '<p style="font-size:0.75rem; color: #ff0055; text-align:center;">Koneksi pencarian lag lagi, coba klik CARI LAGU sekali lagi bre.</p>';
             });
         }
 
@@ -722,4 +734,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
