@@ -332,7 +332,17 @@
 
         <!-- PAGE 2: TOOLS -->
         <div id="page-tools" class="page-content">
-            <!-- TOOL 1: GENERATE DIRECT IMAGE DATA -->
+            <!-- TOOL 1: KIRIM POPUP LIVE CHAT BROADCAST -->
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-paper-plane"></i> Kirim Pop-up Live Chat</div>
+                <div class="input-group">
+                    <label>Pesan Broadcast (Tampil 10 Detik di Viewer)</label>
+                    <input type="text" id="liveMsgInput" class="input-field" placeholder="Ketik pesan broadcast...">
+                </div>
+                <button class="btn-submit" onclick="sendLiveMessage()"><i class="fa-solid fa-bullhorn"></i> KIRIM POP-UP STREAM</button>
+            </div>
+
+            <!-- TOOL 2: GENERATE DIRECT IMAGE DATA -->
             <div class="card">
                 <div class="card-title"><i class="fa-solid fa-image"></i> Konversi Gambar Ke Direct URL</div>
                 <div class="input-group">
@@ -357,7 +367,7 @@
                 </div>
             </div>
 
-            <!-- TOOL 2: YOUTUBE DATA EXPORTER -->
+            <!-- TOOL 3: YOUTUBE DATA EXPORTER -->
             <div class="card">
                 <div class="card-title"><i class="fa-brands fa-youtube"></i> YouTube Data Exporter</div>
                 <div class="input-group">
@@ -445,6 +455,27 @@
             const text = document.getElementById(elementId).innerText;
             navigator.clipboard.writeText(text);
             alert("Teks disalin!");
+        }
+
+        /* BROADCAST POPUP STREAM MESAGE TO VIEWER */
+        function sendLiveMessage() {
+            const msg = document.getElementById('liveMsgInput').value.trim();
+            if (!msg) {
+                alert('Ketik pesan terlebih dahulu!');
+                return;
+            }
+
+            db.ref('liveBroadcast').set({
+                text: msg,
+                timestamp: Date.now()
+            }, (err) => {
+                if (err) {
+                    alert('Gagal mengirim pesan!');
+                } else {
+                    document.getElementById('liveMsgInput').value = '';
+                    alert('Pesan berhasil terkirim dan muncul di Web Viewer!');
+                }
+            });
         }
 
         /* CONVERT GAMBAR LANGSUNG KE DATA URL (ANTI ERROR & CORS-FREE) */
