@@ -56,7 +56,6 @@
             gap: 15px;
         }
 
-        /* HORIZONTAL NAV MENU */
         .nav-bar {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -82,14 +81,8 @@
             transition: all 0.3s ease;
         }
 
-        .nav-btn i {
-            font-size: 1.1rem;
-        }
-
-        .nav-btn span {
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
+        .nav-btn i { font-size: 1.1rem; }
+        .nav-btn span { font-size: 0.75rem; font-weight: 600; }
 
         .nav-btn.active {
             background: rgba(255, 0, 119, 0.15);
@@ -97,16 +90,13 @@
             border: 1px solid var(--accent-pink);
         }
 
-        /* SECTION CARDS */
         .page-content {
             display: none;
             flex-direction: column;
             gap: 15px;
         }
 
-        .page-content.active {
-            display: flex;
-        }
+        .page-content.active { display: flex; }
 
         .card {
             background: var(--card-bg);
@@ -128,11 +118,8 @@
             gap: 8px;
         }
 
-        .card-title i {
-            color: var(--accent-pink);
-        }
+        .card-title i { color: var(--accent-pink); }
 
-        /* FORM STYLES */
         .input-group {
             display: flex;
             flex-direction: column;
@@ -156,9 +143,7 @@
             outline: none;
         }
 
-        .input-field:focus {
-            border-color: var(--accent-pink);
-        }
+        .input-field:focus { border-color: var(--accent-pink); }
 
         .btn-submit {
             width: 100%;
@@ -192,7 +177,6 @@
             gap: 5px;
         }
 
-        /* ITEM LIST */
         .data-item {
             background: #090412;
             border: 1px solid var(--card-border);
@@ -236,7 +220,6 @@
             font-size: 0.75rem;
         }
 
-        /* YT EXPORTER & UPLOADER RESULT */
         .yt-result {
             display: flex;
             flex-direction: column;
@@ -256,18 +239,18 @@
         .yt-box {
             font-size: 0.75rem;
             background: #130a24;
-            padding: 8px;
+            padding: 10px;
             border-radius: 6px;
             color: var(--text-gray);
             word-break: break-word;
             display: flex;
             flex-direction: column;
             gap: 6px;
+            max-height: 200px;
+            overflow-y: auto;
         }
 
-        .yt-box b {
-            color: #fff;
-        }
+        .yt-box b { color: #fff; }
 
         .btn-download {
             background: #25d366;
@@ -281,7 +264,6 @@
             display: block;
         }
 
-        /* INFO BOX */
         .info-grid {
             display: flex;
             flex-direction: column;
@@ -298,14 +280,8 @@
             font-size: 0.75rem;
         }
 
-        .info-row span {
-            color: var(--text-gray);
-        }
-
-        .info-row strong {
-            color: var(--accent-blue);
-            text-align: right;
-        }
+        .info-row span { color: var(--text-gray); }
+        .info-row strong { color: var(--accent-blue); text-align: right; }
     </style>
 </head>
 <body>
@@ -314,7 +290,6 @@
 
     <div class="app-container">
 
-        <!-- MENU NAVBAR -->
         <div class="nav-bar">
             <button class="nav-btn active" onclick="switchPage('page-link', this)">
                 <i class="fa-solid fa-link"></i>
@@ -355,28 +330,28 @@
             </div>
         </div>
 
-        <!-- PAGE 2: TOOLS (YT EXPORTER & DIRECT LINK GENERATOR) -->
+        <!-- PAGE 2: TOOLS -->
         <div id="page-tools" class="page-content">
-            <!-- TOOL 1: IMAGE DIRECT LINK GENERATOR -->
+            <!-- TOOL 1: GENERATE DIRECT IMAGE DATA -->
             <div class="card">
-                <div class="card-title"><i class="fa-solid fa-cloud-arrow-up"></i> Upload & Direct Link Gambar</div>
+                <div class="card-title"><i class="fa-solid fa-image"></i> Konversi Gambar Ke Direct URL</div>
                 <div class="input-group">
                     <label>Pilih Gambar dari Galeri</label>
                     <input type="file" id="imgFileInput" accept="image/*" class="input-field">
                 </div>
-                <button class="btn-submit" id="btnUploadImg" onclick="uploadToDirectLink()"><i class="fa-solid fa-upload"></i> UPLOAD & BUAT DIRECT LINK</button>
+                <button class="btn-submit" id="btnUploadImg" onclick="convertImageToDirectUrl()"><i class="fa-solid fa-bolt"></i> PROSES GAMBAR</button>
             </div>
 
             <div id="imgResultCard" class="card" style="display: none;">
-                <div class="card-title"><i class="fa-solid fa-check-circle"></i> Direct Link Gambar Siap!</div>
+                <div class="card-title"><i class="fa-solid fa-check-circle"></i> Direct URL Gambar Siap!</div>
                 <div class="yt-result">
                     <img id="uploadedImgPreview" class="yt-thumb" src="" alt="Preview">
                     <div class="input-group">
-                        <label>Direct Link Result:</label>
+                        <label>Direct URL Data Gambar:</label>
                         <input type="text" id="directLinkOutput" class="input-field" readonly>
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                        <button class="btn-secondary" onclick="copyText('directLinkOutput')"><i class="fa-solid fa-copy"></i> Salin Link</button>
+                        <button class="btn-secondary" onclick="copyText('directLinkOutput')"><i class="fa-solid fa-copy"></i> Salin URL</button>
                         <button class="btn-secondary" onclick="autoFillThumbnail()"><i class="fa-solid fa-arrow-right"></i> Ke Link Edit</button>
                     </div>
                 </div>
@@ -389,7 +364,7 @@
                     <label>Link Video YouTube</label>
                     <input type="text" id="ytUrl" class="input-field" placeholder="https://youtu.be/... atau https://www.youtube.com/watch?v=...">
                 </div>
-                <button class="btn-submit" onclick="fetchYtData()"><i class="fa-solid fa-download"></i> AMBIL DATA VIDEO</button>
+                <button class="btn-submit" id="btnYtFetch" onclick="fetchYtData()"><i class="fa-solid fa-download"></i> AMBIL DATA VIDEO</button>
             </div>
 
             <div id="ytResultCard" class="card" style="display: none;">
@@ -397,12 +372,12 @@
                 <div class="yt-result">
                     <img id="ytImg" class="yt-thumb" src="" alt="Thumbnail">
                     <div class="yt-box">
-                        <b>Judul :</b>
+                        <b>Judul Video:</b>
                         <span id="ytTitleText">-</span>
                         <button class="btn-secondary" style="margin-top:4px;" onclick="copyDirectText('ytTitleText')"><i class="fa-solid fa-copy"></i> Salin Judul</button>
                     </div>
                     <div class="yt-box">
-                        <b>Deskripsi :</b>
+                        <b>Deskripsi Video:</b>
                         <span id="ytDescText">-</span>
                         <button class="btn-secondary" style="margin-top:4px;" onclick="copyDirectText('ytDescText')"><i class="fa-solid fa-copy"></i> Salin Deskripsi</button>
                     </div>
@@ -438,7 +413,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
-        // CONFIG FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyDSftuyANybsSrzM7M8mvLJrd8-HhEn1BU",
             authDomain: "prindapan-games.firebaseapp.com",
@@ -452,7 +426,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // SWITCH TAB MENU
         function switchPage(pageId, btn) {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -460,7 +433,6 @@
             if (btn) btn.classList.add('active');
         }
 
-        // SALIN TEKS HELPER
         function copyText(elementId) {
             const input = document.getElementById(elementId);
             input.select();
@@ -475,8 +447,8 @@
             alert("Teks disalin!");
         }
 
-        // TOOL: UPLOAD GAMBAR TO DIRECT LINK (IMGBB API)
-        async function uploadToDirectLink() {
+        /* CONVERT GAMBAR LANGSUNG KE DATA URL (ANTI ERROR & CORS-FREE) */
+        function convertImageToDirectUrl() {
             const fileInput = document.getElementById('imgFileInput');
             const file = fileInput.files[0];
 
@@ -485,49 +457,27 @@
                 return;
             }
 
-            const btn = document.getElementById('btnUploadImg');
-            btn.innerText = "Mengunggah...";
-            btn.disabled = true;
-
-            const formData = new FormData();
-            formData.append('image', file);
-
-            try {
-                // Free API Key ImgBB
-                const res = await fetch('https://api.imgbb.com/1/upload?key=b367bd8dcbb1f5c6e885d5ad17bbd22f', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await res.json();
-
-                if (data.success) {
-                    const directUrl = data.data.url;
-                    document.getElementById('uploadedImgPreview').src = directUrl;
-                    document.getElementById('directLinkOutput').value = directUrl;
-                    document.getElementById('imgResultCard').style.display = 'flex';
-                    alert('Upload berhasil!');
-                } else {
-                    alert('Gagal mengunggah gambar!');
-                }
-            } catch (e) {
-                alert('Terjadi kesalahan koneksi saat unggah gambar.');
-            } finally {
-                btn.innerHTML = '<i class="fa-solid fa-upload"></i> UPLOAD & BUAT DIRECT LINK';
-                btn.disabled = false;
-            }
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const dataUrl = e.target.result;
+                document.getElementById('uploadedImgPreview').src = dataUrl;
+                document.getElementById('directLinkOutput').value = dataUrl;
+                document.getElementById('imgResultCard').style.display = 'flex';
+                alert('Gambar berhasil diproses!');
+            };
+            reader.readAsDataURL(file);
         }
 
         function autoFillThumbnail() {
             const directUrl = document.getElementById('directLinkOutput').value;
             document.getElementById('linkImg').value = directUrl;
             
-            // Switch otomatis ke page Link Edit
             const linkNavBtn = document.querySelectorAll('.nav-btn')[0];
             switchPage('page-link', linkNavBtn);
-            alert('URL Thumbnail otomatis diisikan ke Form Link Edit!');
+            alert('URL Gambar otomatis diisikan ke Form Link Edit!');
         }
 
-        // FIREBASE LINK MANAGEMENT
+        /* FIREBASE LINK MANAGEMENT */
         function addLink() {
             const title = document.getElementById('linkTitle').value.trim();
             const url = document.getElementById('linkUrl').value.trim();
@@ -577,7 +527,7 @@
             }
         });
 
-        // TOOLS: YOUTUBE EXPORTER
+        /* YOUTUBE EXPORTER WITH FULL DESCRIPTION SCRAPER */
         function extractVideoID(url) {
             const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
             const match = url.match(regExp);
@@ -593,25 +543,42 @@
                 return;
             }
 
+            const btn = document.getElementById('btnYtFetch');
+            btn.innerText = "Mengambil Data...";
+            btn.disabled = true;
+
             const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
             document.getElementById('ytImg').src = thumbUrl;
             document.getElementById('btnDlThumb').href = thumbUrl;
 
             try {
-                const res = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
+                const res = await fetch(`https://pipedapi.kavin.rocks/streams/${videoId}`);
                 const data = await res.json();
 
-                document.getElementById('ytTitleText').innerText = data.title || "Tidak ditemukan";
-                document.getElementById('ytDescText').innerText = `Diupload oleh: ${data.author_name || '-'}\nURL: https://youtu.be/${videoId}`;
-                document.getElementById('ytResultCard').style.display = 'flex';
+                if (data.title) {
+                    document.getElementById('ytTitleText').innerText = data.title;
+                    document.getElementById('ytDescText').innerText = data.description || "Tidak ada deskripsi pada video ini.";
+                } else {
+                    throw new Error();
+                }
             } catch (e) {
-                document.getElementById('ytTitleText').innerText = "Gagal mengambil judul";
-                document.getElementById('ytDescText').innerText = "Video tidak dapat dimuat atau dibatasi.";
+                try {
+                    const fallbackRes = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
+                    const fallbackData = await fallbackRes.json();
+                    document.getElementById('ytTitleText').innerText = fallbackData.title || "Video Ditemukan";
+                    document.getElementById('ytDescText').innerText = `Pengunggah: ${fallbackData.author_name || '-'}\nVideo ID: ${videoId}`;
+                } catch(err) {
+                    document.getElementById('ytTitleText').innerText = "Gagal memuat judul";
+                    document.getElementById('ytDescText').innerText = "Deskripsi tidak dapat diambil.";
+                }
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-download"></i> AMBIL DATA VIDEO';
+                btn.disabled = false;
                 document.getElementById('ytResultCard').style.display = 'flex';
             }
         }
 
-        // INFO: WAKTU WIB REALTIME
+        /* INFO WAKTU & LOKASI */
         function updateTime() {
             const now = new Date();
             const optionsTime = { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', second: '2-digit' };
@@ -627,7 +594,6 @@
         setInterval(updateTime, 1000);
         updateTime();
 
-        // INFO: LOKASI TERKINI
         function getLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (pos) => {
