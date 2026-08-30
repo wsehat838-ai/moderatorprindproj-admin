@@ -56,7 +56,7 @@
             gap: 15px;
         }
 
-        /* HORIZONTAL NAV MENU (Mirip UI Referensi) */
+        /* HORIZONTAL NAV MENU */
         .nav-bar {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -177,6 +177,21 @@
             gap: 8px;
         }
 
+        .btn-secondary {
+            background: rgba(0, 210, 255, 0.15);
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
         /* ITEM LIST */
         .data-item {
             background: #090412;
@@ -221,7 +236,7 @@
             font-size: 0.75rem;
         }
 
-        /* YT EXPORTER RESULT */
+        /* YT EXPORTER & UPLOADER RESULT */
         .yt-result {
             display: flex;
             flex-direction: column;
@@ -245,12 +260,13 @@
             border-radius: 6px;
             color: var(--text-gray);
             word-break: break-word;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
         .yt-box b {
             color: #fff;
-            display: block;
-            margin-bottom: 2px;
         }
 
         .btn-download {
@@ -339,8 +355,34 @@
             </div>
         </div>
 
-        <!-- PAGE 2: TOOLS (YT EXPORTER) -->
+        <!-- PAGE 2: TOOLS (YT EXPORTER & DIRECT LINK GENERATOR) -->
         <div id="page-tools" class="page-content">
+            <!-- TOOL 1: IMAGE DIRECT LINK GENERATOR -->
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-cloud-arrow-up"></i> Upload & Direct Link Gambar</div>
+                <div class="input-group">
+                    <label>Pilih Gambar dari Galeri</label>
+                    <input type="file" id="imgFileInput" accept="image/*" class="input-field">
+                </div>
+                <button class="btn-submit" id="btnUploadImg" onclick="uploadToDirectLink()"><i class="fa-solid fa-upload"></i> UPLOAD & BUAT DIRECT LINK</button>
+            </div>
+
+            <div id="imgResultCard" class="card" style="display: none;">
+                <div class="card-title"><i class="fa-solid fa-check-circle"></i> Direct Link Gambar Siap!</div>
+                <div class="yt-result">
+                    <img id="uploadedImgPreview" class="yt-thumb" src="" alt="Preview">
+                    <div class="input-group">
+                        <label>Direct Link Result:</label>
+                        <input type="text" id="directLinkOutput" class="input-field" readonly>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        <button class="btn-secondary" onclick="copyText('directLinkOutput')"><i class="fa-solid fa-copy"></i> Salin Link</button>
+                        <button class="btn-secondary" onclick="autoFillThumbnail()"><i class="fa-solid fa-arrow-right"></i> Ke Link Edit</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOOL 2: YOUTUBE DATA EXPORTER -->
             <div class="card">
                 <div class="card-title"><i class="fa-brands fa-youtube"></i> YouTube Data Exporter</div>
                 <div class="input-group">
@@ -351,16 +393,18 @@
             </div>
 
             <div id="ytResultCard" class="card" style="display: none;">
-                <div class="card-title"><i class="fa-solid fa-file-export"></i> Hasil Ekspor</div>
+                <div class="card-title"><i class="fa-solid fa-file-export"></i> Hasil Ekspor YouTube</div>
                 <div class="yt-result">
                     <img id="ytImg" class="yt-thumb" src="" alt="Thumbnail">
                     <div class="yt-box">
                         <b>Judul :</b>
                         <span id="ytTitleText">-</span>
+                        <button class="btn-secondary" style="margin-top:4px;" onclick="copyDirectText('ytTitleText')"><i class="fa-solid fa-copy"></i> Salin Judul</button>
                     </div>
                     <div class="yt-box">
                         <b>Deskripsi :</b>
                         <span id="ytDescText">-</span>
+                        <button class="btn-secondary" style="margin-top:4px;" onclick="copyDirectText('ytDescText')"><i class="fa-solid fa-copy"></i> Salin Deskripsi</button>
                     </div>
                     <a id="btnDlThumb" class="btn-download" href="#" target="_blank" download="thumbnail.jpg"><i class="fa-solid fa-image"></i> UNDUH THUMBNAIL HD</a>
                 </div>
@@ -413,7 +457,74 @@
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
-            btn.classList.add('active');
+            if (btn) btn.classList.add('active');
+        }
+
+        // SALIN TEKS HELPER
+        function copyText(elementId) {
+            const input = document.getElementById(elementId);
+            input.select();
+            input.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(input.value);
+            alert("Teks berhasil disalin!");
+        }
+
+        function copyDirectText(elementId) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text);
+            alert("Teks disalin!");
+        }
+
+        // TOOL: UPLOAD GAMBAR TO DIRECT LINK (IMGBB API)
+        async function uploadToDirectLink() {
+            const fileInput = document.getElementById('imgFileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Pilih gambar terlebih dahulu!');
+                return;
+            }
+
+            const btn = document.getElementById('btnUploadImg');
+            btn.innerText = "Mengunggah...";
+            btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                // Free API Key ImgBB
+                const res = await fetch('https://api.imgbb.com/1/upload?key=b367bd8dcbb1f5c6e885d5ad17bbd22f', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    const directUrl = data.data.url;
+                    document.getElementById('uploadedImgPreview').src = directUrl;
+                    document.getElementById('directLinkOutput').value = directUrl;
+                    document.getElementById('imgResultCard').style.display = 'flex';
+                    alert('Upload berhasil!');
+                } else {
+                    alert('Gagal mengunggah gambar!');
+                }
+            } catch (e) {
+                alert('Terjadi kesalahan koneksi saat unggah gambar.');
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-upload"></i> UPLOAD & BUAT DIRECT LINK';
+                btn.disabled = false;
+            }
+        }
+
+        function autoFillThumbnail() {
+            const directUrl = document.getElementById('directLinkOutput').value;
+            document.getElementById('linkImg').value = directUrl;
+            
+            // Switch otomatis ke page Link Edit
+            const linkNavBtn = document.querySelectorAll('.nav-btn')[0];
+            switchPage('page-link', linkNavBtn);
+            alert('URL Thumbnail otomatis diisikan ke Form Link Edit!');
         }
 
         // FIREBASE LINK MANAGEMENT
@@ -503,7 +614,6 @@
         // INFO: WAKTU WIB REALTIME
         function updateTime() {
             const now = new Date();
-            const optionsDate = { timeZone: 'Asia/Jakarta', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const optionsTime = { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', second: '2-digit' };
             
             const hariStr = now.toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta', weekday: 'long' });
@@ -517,7 +627,7 @@
         setInterval(updateTime, 1000);
         updateTime();
 
-        // INFO: LOKASI TERKINI (GEOLOCATION & REVERSE GEOCLE)
+        // INFO: LOKASI TERKINI
         function getLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (pos) => {
