@@ -2,41 +2,399 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>PRINDAPAN GAMES - Admin Panel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN PANEL - PRINDAPAN GAMES</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background: #0a0512; color: #fff; font-family: 'Poppins', sans-serif; padding: 20px; }
-        h1 { font-family: 'Orbitron', sans-serif; color: #ff0055; text-shadow: 0 0 10px #ff0055; }
-        .form-box { background: #130a21; padding: 20px; border: 2px solid #ff0055; border-radius: 10px; max-width: 500px; margin-bottom: 30px; }
-        input { width: 100%; padding: 10px; margin: 8px 0; background: #0a0512; border: 1px solid #9d00ff; color: #fff; border-radius: 5px; box-sizing: border-box; }
-        button { background: #ff0055; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; }
-        table { width: 100%; border-collapse: collapse; background: #130a21; border-radius: 10px; overflow: hidden; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #9d00ff; }
-        th { background: #1a0f2e; color: #9d00ff; font-family: 'Orbitron', sans-serif; }
-        .btn-del { background: #ff3333; width: auto; padding: 5px 10px; }
+        :root {
+            --bg-dark: #090514;
+            --card-bg: #130a24;
+            --card-border: #261547;
+            --accent-pink: #ff0077;
+            --accent-purple: #8a2be2;
+            --accent-blue: #00d2ff;
+            --text-gray: #a49bba;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .header-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 900;
+            text-align: center;
+            margin: 10px 0 20px 0;
+            background: linear-gradient(45deg, var(--accent-pink), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* HORIZONTAL NAV MENU (Mirip UI Referensi) */
+        .nav-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            background: var(--card-bg);
+            padding: 8px;
+            border-radius: 14px;
+            border: 1px solid var(--card-border);
+        }
+
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 5px;
+            border-radius: 10px;
+            background: transparent;
+            border: none;
+            color: var(--text-gray);
+            cursor: pointer;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn i {
+            font-size: 1.1rem;
+        }
+
+        .nav-btn span {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .nav-btn.active {
+            background: rgba(255, 0, 119, 0.15);
+            color: var(--accent-pink);
+            border: 1px solid var(--accent-pink);
+        }
+
+        /* SECTION CARDS */
+        .page-content {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .page-content.active {
+            display: flex;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title i {
+            color: var(--accent-pink);
+        }
+
+        /* FORM STYLES */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-group label {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            font-weight: 600;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            background: #090412;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.8rem;
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: var(--accent-pink);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, var(--accent-pink), var(--accent-purple));
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 800;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* ITEM LIST */
+        .data-item {
+            background: #090412;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .data-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            overflow: hidden;
+        }
+
+        .data-info strong {
+            font-size: 0.8rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .data-info span {
+            font-size: 0.7rem;
+            color: var(--text-gray);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .btn-del {
+            background: rgba(255, 0, 85, 0.2);
+            border: 1px solid #ff0055;
+            color: #ff0055;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        /* YT EXPORTER RESULT */
+        .yt-result {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #090412;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--card-border);
+        }
+
+        .yt-thumb {
+            width: 100%;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .yt-box {
+            font-size: 0.75rem;
+            background: #130a24;
+            padding: 8px;
+            border-radius: 6px;
+            color: var(--text-gray);
+            word-break: break-word;
+        }
+
+        .yt-box b {
+            color: #fff;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .btn-download {
+            background: #25d366;
+            color: #000;
+            font-weight: 700;
+            padding: 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            text-align: center;
+            font-size: 0.75rem;
+            display: block;
+        }
+
+        /* INFO BOX */
+        .info-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #090412;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+        }
+
+        .info-row span {
+            color: var(--text-gray);
+        }
+
+        .info-row strong {
+            color: var(--accent-blue);
+            text-align: right;
+        }
     </style>
 </head>
 <body>
-    <h1>ADMIN PANEL - PRINDAPAN GAMES</h1>
-    <div class="form-box">
-        <h3>Tambah Link Game Baru</h3>
-        <input type="text" id="title" placeholder="Nama Game / Script">
-        <input type="text" id="url" placeholder="URL Download / Link Data">
-        <input type="text" id="img" placeholder="URL Gambar Thumbnail">
-        <button onclick="addLink()">SIMPAN DATA</button>
-    </div>
 
-    <h3>Daftar Link Aktif</h3>
-    <table>
-        <thead>
-            <tr><th>Judul</th><th>Link</th><th>Aksi</th></tr>
-        </thead>
-        <tbody id="adminTable"></tbody>
-    </table>
+    <div class="header-title">ADMIN PANEL - PRINDAPAN</div>
+
+    <div class="app-container">
+
+        <!-- MENU NAVBAR -->
+        <div class="nav-bar">
+            <button class="nav-btn active" onclick="switchPage('page-link', this)">
+                <i class="fa-solid fa-link"></i>
+                <span>Link Edit</span>
+            </button>
+            <button class="nav-btn" onclick="switchPage('page-tools', this)">
+                <i class="fa-solid fa-wrench"></i>
+                <span>Tools</span>
+            </button>
+            <button class="nav-btn" onclick="switchPage('page-info', this)">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>Info</span>
+            </button>
+        </div>
+
+        <!-- PAGE 1: LINK EDIT -->
+        <div id="page-link" class="page-content active">
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-plus-circle"></i> Tambah Link Game</div>
+                <div class="input-group">
+                    <label>Nama Game / Script</label>
+                    <input type="text" id="linkTitle" class="input-field" placeholder="Masukkan judul...">
+                </div>
+                <div class="input-group">
+                    <label>URL Download / Link Data</label>
+                    <input type="text" id="linkUrl" class="input-field" placeholder="https://...">
+                </div>
+                <div class="input-group">
+                    <label>URL Gambar Thumbnail</label>
+                    <input type="text" id="linkImg" class="input-field" placeholder="https://...">
+                </div>
+                <button class="btn-submit" onclick="addLink()"><i class="fa-solid fa-save"></i> SIMPAN DATA</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-list"></i> Daftar Link Aktif</div>
+                <div id="linkList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 2: TOOLS (YT EXPORTER) -->
+        <div id="page-tools" class="page-content">
+            <div class="card">
+                <div class="card-title"><i class="fa-brands fa-youtube"></i> YouTube Data Exporter</div>
+                <div class="input-group">
+                    <label>Link Video YouTube</label>
+                    <input type="text" id="ytUrl" class="input-field" placeholder="https://youtu.be/... atau https://www.youtube.com/watch?v=...">
+                </div>
+                <button class="btn-submit" onclick="fetchYtData()"><i class="fa-solid fa-download"></i> AMBIL DATA VIDEO</button>
+            </div>
+
+            <div id="ytResultCard" class="card" style="display: none;">
+                <div class="card-title"><i class="fa-solid fa-file-export"></i> Hasil Ekspor</div>
+                <div class="yt-result">
+                    <img id="ytImg" class="yt-thumb" src="" alt="Thumbnail">
+                    <div class="yt-box">
+                        <b>Judul :</b>
+                        <span id="ytTitleText">-</span>
+                    </div>
+                    <div class="yt-box">
+                        <b>Deskripsi :</b>
+                        <span id="ytDescText">-</span>
+                    </div>
+                    <a id="btnDlThumb" class="btn-download" href="#" target="_blank" download="thumbnail.jpg"><i class="fa-solid fa-image"></i> UNDUH THUMBNAIL HD</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 3: INFO -->
+        <div id="page-info" class="page-content">
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-clock"></i> Waktu System (WIB)</div>
+                <div class="info-grid">
+                    <div class="info-row"><span>Hari</span><strong id="infHari">-</strong></div>
+                    <div class="info-row"><span>Tanggal</span><strong id="infTgl">-</strong></div>
+                    <div class="info-row"><span>Jam</span><strong id="infJam">-</strong></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-location-dot"></i> Lokasi Terkini</div>
+                <div class="info-grid">
+                    <div class="info-row"><span>Nama Tempat</span><strong id="infTempat">Memuat...</strong></div>
+                    <div class="info-row"><span>Daerah / Kota</span><strong id="infKota">Memuat...</strong></div>
+                    <div class="info-row"><span>Provinsi</span><strong id="infProv">Memuat...</strong></div>
+                    <div class="info-row"><span>Koordinat</span><strong id="infKoord">Memuat...</strong></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
+        // CONFIG FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyDSftuyANybsSrzM7M8mvLJrd8-HhEn1BU",
             authDomain: "prindapan-games.firebaseapp.com",
@@ -50,38 +408,145 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function addLink() {
-            const title = document.getElementById('title').value;
-            const url = document.getElementById('url').value;
-            const img = document.getElementById('img').value;
-
-            if(!title || !url) return alert('Isi Judul dan Link!');
-
-            db.ref('links').push({ title, url, img });
-            document.getElementById('title').value = '';
-            document.getElementById('url').value = '';
-            document.getElementById('img').value = '';
+        // SWITCH TAB MENU
+        function switchPage(pageId, btn) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            btn.classList.add('active');
         }
 
-        function deleteLink(id) {
-            db.ref('links/' + id).remove();
+        // FIREBASE LINK MANAGEMENT
+        function addLink() {
+            const title = document.getElementById('linkTitle').value.trim();
+            const url = document.getElementById('linkUrl').value.trim();
+            const img = document.getElementById('linkImg').value.trim();
+
+            if (!title || !url) {
+                alert('Judul dan URL Download wajib diisi!');
+                return;
+            }
+
+            db.ref('links').push({ title, url, img }, (err) => {
+                if (err) alert('Gagal menyimpan!');
+                else {
+                    document.getElementById('linkTitle').value = '';
+                    document.getElementById('linkUrl').value = '';
+                    document.getElementById('linkImg').value = '';
+                    alert('Data berhasil ditambahkan!');
+                }
+            });
+        }
+
+        function deleteLink(key) {
+            if (confirm('Yakin ingin menghapus link ini?')) {
+                db.ref('links/' + key).remove();
+            }
         }
 
         db.ref('links').on('value', (snapshot) => {
-            const table = document.getElementById('adminTable');
-            table.innerHTML = '';
+            const list = document.getElementById('linkList');
+            list.innerHTML = '';
             const data = snapshot.val();
+            if (!data) {
+                list.innerHTML = '<p style="font-size:0.75rem; color: var(--text-gray); text-align:center;">Belum ada link tersimpan.</p>';
+                return;
+            }
             for (let id in data) {
                 const item = data[id];
-                table.innerHTML += `
-                    <tr>
-                        <td>${item.title}</td>
-                        <td><a href="${item.url}" target="_blank" style="color:#9d00ff;">${item.url}</a></td>
-                        <td><button class="btn-del" onclick="deleteLink('${id}')">Hapus</button></td>
-                    </tr>
+                list.innerHTML += `
+                    <div class="data-item">
+                        <div class="data-info">
+                            <strong>${item.title}</strong>
+                            <span>${item.url}</span>
+                        </div>
+                        <button class="btn-del" onclick="deleteLink('${id}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
                 `;
             }
         });
+
+        // TOOLS: YOUTUBE EXPORTER
+        function extractVideoID(url) {
+            const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[7].length === 11) ? match[7] : false;
+        }
+
+        async function fetchYtData() {
+            const url = document.getElementById('ytUrl').value.trim();
+            const videoId = extractVideoID(url);
+
+            if (!videoId) {
+                alert('Link YouTube tidak valid!');
+                return;
+            }
+
+            const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+            document.getElementById('ytImg').src = thumbUrl;
+            document.getElementById('btnDlThumb').href = thumbUrl;
+
+            try {
+                const res = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
+                const data = await res.json();
+
+                document.getElementById('ytTitleText').innerText = data.title || "Tidak ditemukan";
+                document.getElementById('ytDescText').innerText = `Diupload oleh: ${data.author_name || '-'}\nURL: https://youtu.be/${videoId}`;
+                document.getElementById('ytResultCard').style.display = 'flex';
+            } catch (e) {
+                document.getElementById('ytTitleText').innerText = "Gagal mengambil judul";
+                document.getElementById('ytDescText').innerText = "Video tidak dapat dimuat atau dibatasi.";
+                document.getElementById('ytResultCard').style.display = 'flex';
+            }
+        }
+
+        // INFO: WAKTU WIB REALTIME
+        function updateTime() {
+            const now = new Date();
+            const optionsDate = { timeZone: 'Asia/Jakarta', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const optionsTime = { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            
+            const hariStr = now.toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta', weekday: 'long' });
+            const tglStr = now.toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta', year: 'numeric', month: 'long', day: 'numeric' });
+            const jamStr = now.toLocaleTimeString('id-ID', optionsTime) + " WIB";
+
+            document.getElementById('infHari').innerText = hariStr;
+            document.getElementById('infTgl').innerText = tglStr;
+            document.getElementById('infJam').innerText = jamStr;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // INFO: LOKASI TERKINI (GEOLOCATION & REVERSE GEOCLE)
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    document.getElementById('infKoord').innerText = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+
+                    try {
+                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+                        const data = await res.json();
+                        const addr = data.address;
+
+                        document.getElementById('infTempat').innerText = addr.amenity || addr.building || addr.road || "Area Pemukiman";
+                        document.getElementById('infKota').innerText = addr.city || addr.town || addr.county || "-";
+                        document.getElementById('infProv').innerText = addr.state || "-";
+                    } catch (e) {
+                        document.getElementById('infTempat').innerText = "Gagal memuat alamat";
+                    }
+                }, () => {
+                    document.getElementById('infTempat').innerText = "Izin Lokasi Ditolak";
+                    document.getElementById('infKota').innerText = "-";
+                    document.getElementById('infProv').innerText = "-";
+                    document.getElementById('infKoord').innerText = "-";
+                });
+            } else {
+                document.getElementById('infTempat').innerText = "GPS Tidak Didukung";
+            }
+        }
+        getLocation();
     </script>
 </body>
 </html>
