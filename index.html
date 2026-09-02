@@ -1,1 +1,720 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Arcade Vault - Neo Arcade Edition</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800;900&family=Rajdhani:wght@600;700&display=swap');
 
+        :root {
+            --bg-main: #06080e;
+            --panel-bg: rgba(18, 22, 36, 0.75);
+            --border-neon: #1e2942;
+            --cyan-glow: #00f3ff;
+            --pink-glow: #ff0055;
+            --green-glow: #00ff66;
+            --yellow-glow: #ffcc00;
+            --text-main: #e2e8f0;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Rajdhani', sans-serif;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(0, 243, 255, 0.08) 0%, transparent 50%),
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 30px 30px, 30px 30px;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 20px 40px;
+            background: rgba(10, 14, 24, 0.85);
+            border-bottom: 1px solid var(--border-neon);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(12px);
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, var(--cyan-glow), var(--pink-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            width: 100%;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
+        }
+
+        .game-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-neon);
+            border-radius: 16px;
+            padding: 24px;
+            cursor: pointer;
+            position: relative;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan-glow), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--cyan-glow);
+            box-shadow: 0 10px 30px rgba(0, 243, 255, 0.15);
+        }
+
+        .game-card:hover::before { opacity: 1; }
+
+        .game-icon { font-size: 40px; margin-bottom: 15px; }
+        .game-card h3 { font-family: 'Orbitron', sans-serif; font-size: 18px; margin-bottom: 6px; }
+        .game-card p { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+
+        .control-badge {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 4px 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            font-size: 11px;
+            color: var(--cyan-glow);
+            font-weight: 700;
+        }
+
+        /* POPUP MODAL SCREEN */
+        .game-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(4, 6, 12, 0.96);
+            z-index: 100;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(20px);
+        }
+
+        .modal-header {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-neon);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 800;
+            transition: 0.2s;
+        }
+
+        .close-btn:hover { background: var(--pink-glow); border-color: var(--pink-glow); }
+
+        canvas {
+            background: #030509;
+            border: 2px solid var(--border-neon);
+            border-radius: 12px;
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.1);
+        }
+
+        .score-display {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--cyan-glow);
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+        }
+
+        /* SEPARATED CONTROLS UI SYSTEM */
+        .controls-layer {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            pointer-events: none;
+        }
+
+        /* 1. JOYSTICK ANALOG SYSTEM */
+        #touch-joystick {
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(0, 243, 255, 0.3);
+            border-radius: 50%;
+            position: relative;
+            pointer-events: auto;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+            display: none;
+        }
+
+        #joystick-knob {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, var(--cyan-glow), #007799);
+            border-radius: 50%;
+            position: absolute;
+            top: 28px;
+            left: 28px;
+            box-shadow: 0 0 12px var(--cyan-glow);
+        }
+
+        /* 2. D-PAD ARROWS SYSTEM */
+        #dpad-arrows {
+            width: 110px;
+            height: 110px;
+            position: relative;
+            pointer-events: auto;
+            display: none;
+        }
+
+        .dbtn {
+            position: absolute;
+            width: 35px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+        .dbtn:active { background: var(--cyan-glow); color: #000; }
+        .dbtn-up { top: 0; left: 37.5px; }
+        .dbtn-down { bottom: 0; left: 37.5px; }
+        .dbtn-left { top: 37.5px; left: 0; }
+        .dbtn-right { top: 37.5px; right: 0; }
+
+        .btn-group { display: flex; gap: 12px; pointer-events: auto; }
+        .action-btn {
+            width: 55px;
+            height: 55px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .action-btn:active { background: var(--pink-glow); box-shadow: 0 0 15px var(--pink-glow); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">ARCADE VAULT</div>
+        <div style="font-size: 13px; color: var(--text-muted); font-weight: 700;">PRO NEO-DARK EDITION</div>
+    </header>
+
+    <div class="container">
+        <div class="game-grid">
+            <div class="game-card" onclick="launchGame('tetris')">
+                <div class="game-icon">🧩</div>
+                <h3>Tetris Neo</h3>
+                <p>Engine Balok Khas Klasik & Neon Grid</p>
+                <div class="control-badge">🎮 Kontrol: Tombol Panah (D-Pad)</div>
+            </div>
+            <div class="game-card" onclick="launchGame('pacman')">
+                <div class="game-icon">👻</div>
+                <h3>Pac-Man Neon</h3>
+                <p>Labirin Retro + Visual Glow Modern</p>
+                <div class="control-badge">🎮 Kontrol: Tombol Panah (D-Pad)</div>
+            </div>
+            <div class="game-card" onclick="launchGame('snake')">
+                <div class="game-icon">🐍</div>
+                <h3>Cyber Snake</h3>
+                <p>Pergerakan Ular Presisi Grid</p>
+                <div class="control-badge">🎮 Kontrol: Tombol Panah (D-Pad)</div>
+            </div>
+            <div class="game-card" onclick="launchGame('pool')">
+                <div class="game-icon">🎱</div>
+                <h3>8-Ball Pool</h3>
+                <p>Fisika Pantulan & Visual Meja Dark Green</p>
+                <div class="control-badge">🕹️ Kontrol: Joystick / Mouse Aim</div>
+            </div>
+            <div class="game-card" onclick="launchGame('pong')">
+                <div class="game-icon">🏓</div>
+                <h3>Neon Pong</h3>
+                <p>Duel Paddle dengan Efek Pantulan Cahaya</p>
+                <div class="control-badge">🕹️ Kontrol: Joystick Analog</div>
+            </div>
+            <div class="game-card" onclick="launchGame('flappy')">
+                <div class="game-icon">🐦</div>
+                <h3>Cyber Bird</h3>
+                <p>Rintangan Pipa Glow & Timing Presisi</p>
+                <div class="control-badge">🕹️ Kontrol: Joystick / Action Button</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DISPLAY GAME -->
+    <div id="gameModal" class="game-modal">
+        <div class="modal-header">
+            <h2 id="gameTitle" style="font-family:'Orbitron'; font-size: 16px; color: var(--cyan-glow);">Game Mode</h2>
+            <button class="close-btn" onclick="closeGame()">ESC / TUTUP</button>
+        </div>
+
+        <div class="score-display" id="scoreDisplay">SCORE: 0</div>
+        <canvas id="gameCanvas" width="360" height="480"></canvas>
+
+        <div class="controls-layer">
+            <!-- JOYSTICK ONLY FOR ANALOG GAMES -->
+            <div id="touch-joystick"><div id="joystick-knob"></div></div>
+
+            <!-- D-PAD ONLY FOR GRID ARROW GAMES -->
+            <div id="dpad-arrows">
+                <div class="dbtn dbtn-up" id="d-up">▲</div>
+                <div class="dbtn dbtn-down" id="d-down">▼</div>
+                <div class="dbtn dbtn-left" id="d-left">◀</div>
+                <div class="dbtn dbtn-right" id="d-right">▶</div>
+            </div>
+
+            <div class="btn-group">
+                <div class="action-btn" id="btn-action-a">A</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('gameModal');
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        
+        const uiJoystick = document.getElementById('touch-joystick');
+        const uiDpad = document.getElementById('dpad-arrows');
+        let currentInterval = null;
+
+        const keys = { left: false, right: false, up: false, down: false, actionA: false };
+
+        // Keyboard Controls
+        window.addEventListener('keydown', e => {
+            if (e.key === 'ArrowLeft') keys.left = true;
+            if (e.key === 'ArrowRight') keys.right = true;
+            if (e.key === 'ArrowUp') keys.up = true;
+            if (e.key === 'ArrowDown') keys.down = true;
+            if (e.key === ' ') keys.actionA = true;
+        });
+
+        window.addEventListener('keyup', e => {
+            if (e.key === 'ArrowLeft') keys.left = false;
+            if (e.key === 'ArrowRight') keys.right = false;
+            if (e.key === 'ArrowUp') keys.up = false;
+            if (e.key === 'ArrowDown') keys.down = false;
+            if (e.key === ' ') keys.actionA = false;
+        });
+
+        // Virtual D-Pad Touch Controls
+        const bindDPad = (id, keyName) => {
+            const el = document.getElementById(id);
+            el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[keyName] = true; });
+            el.addEventListener('touchend', (e) => { e.preventDefault(); keys[keyName] = false; });
+        };
+        bindDPad('d-up', 'up'); bindDPad('d-down', 'down');
+        bindDPad('d-left', 'left'); bindDPad('d-right', 'right');
+
+        // Touch Joystick Engine
+        const knob = document.getElementById('joystick-knob');
+        let joyActive = false;
+
+        uiJoystick.addEventListener('touchstart', () => joyActive = true);
+        window.addEventListener('touchmove', e => {
+            if (!joyActive) return;
+            const rect = uiJoystick.getBoundingClientRect();
+            const touch = e.touches[0];
+            const dx = touch.clientX - (rect.left + 50);
+            const dy = touch.clientY - (rect.top + 50);
+            knob.style.transform = `translate(${Math.max(-25, Math.min(25, dx))}px, ${Math.max(-25, Math.min(25, dy))}px)`;
+            
+            keys.left = dx < -10; keys.right = dx > 10;
+            keys.up = dy < -10; keys.down = dy > 10;
+        });
+
+        window.addEventListener('touchend', () => {
+            joyActive = false;
+            knob.style.transform = 'translate(0, 0)';
+            keys.left = keys.right = keys.up = keys.down = false;
+        });
+
+        function setupControlUI(type) {
+            if (type === 'dpad') {
+                uiDpad.style.display = 'block';
+                uiJoystick.style.display = 'none';
+            } else {
+                uiDpad.style.display = 'none';
+                uiJoystick.style.display = 'block';
+            }
+        }
+
+        function launchGame(gameId) {
+            modal.style.display = 'flex';
+            if (currentInterval) clearInterval(currentInterval);
+            canvas.onclick = null; canvas.onmousemove = null; canvas.onmouseup = null;
+
+            if (gameId === 'tetris') { setupControlUI('dpad'); runTetris(); }
+            if (gameId === 'pacman') { setupControlUI('dpad'); runPacman(); }
+            if (gameId === 'snake') { setupControlUI('dpad'); runSnake(); }
+            
+            if (gameId === 'pool') { setupControlUI('joystick'); runPool(); }
+            if (gameId === 'pong') { setupControlUI('joystick'); runPong(); }
+            if (gameId === 'flappy') { setupControlUI('joystick'); runFlappy(); }
+        }
+
+        function closeGame() {
+            modal.style.display = 'none';
+            if (currentInterval) clearInterval(currentInterval);
+        }
+
+        // ----------------------------------------------------
+        // VISUAL ENHANCED GAME ENGINES
+        // ----------------------------------------------------
+
+        // 1. TETRIS (NEON SHADOWS & BLOCKS)
+        function runTetris() {
+            document.getElementById('gameTitle').innerText = "Tetris Neo";
+            const COLS = 10, ROWS = 20, BLOCK = 24;
+            let board = Array(ROWS).fill(null).map(() => Array(COLS).fill(0));
+            let score = 0;
+
+            const SHAPES = [
+                [[1,1,1,1]], [[1,1],[1,1]], [[0,1,0],[1,1,1]], [[1,0,0],[1,1,1]], [[0,0,1],[1,1,1]]
+            ];
+            const COLORS = ['#00f3ff', '#ffcc00', '#ab47bc', '#ff9100', '#2979ff'];
+
+            let piece = { shape: SHAPES[0], color: COLORS[0], x: 3, y: 0 };
+            let dropCounter = 0, keyCooldown = 0;
+
+            function collide(b, p, offset) {
+                for (let r = 0; r < p.shape.length; r++) {
+                    for (let c = 0; c < p.shape[r].length; c++) {
+                        if (p.shape[r][c] && (b[r + p.y + offset.y] && b[r + p.y + offset.y][c + p.x + offset.x]) !== 0) return true;
+                    }
+                }
+                return false;
+            }
+
+            function merge(b, p) {
+                p.shape.forEach((row, r) => row.forEach((val, c) => {
+                    if (val) b[r + p.y][c + p.x] = p.color;
+                }));
+            }
+
+            function rotate(matrix) { return matrix[0].map((_, i) => matrix.map(row => row[i]).reverse()); }
+
+            currentInterval = setInterval(() => {
+                dropCounter++; keyCooldown++;
+
+                if (keyCooldown > 6) {
+                    if (keys.left && !collide(board, piece, {x:-1, y:0})) piece.x--;
+                    if (keys.right && !collide(board, piece, {x:1, y:0})) piece.x++;
+                    if (keys.up) {
+                        const rotated = rotate(piece.shape);
+                        if (!collide(board, { ...piece, shape: rotated }, {x:0, y:0})) piece.shape = rotated;
+                    }
+                    keyCooldown = 0;
+                }
+
+                if (dropCounter > (keys.down ? 2 : 25)) {
+                    if (!collide(board, piece, {x:0, y:1})) { piece.y++; }
+                    else {
+                        merge(board, piece);
+                        for (let r = ROWS - 1; r >= 0; r--) {
+                            if (board[r].every(val => val !== 0)) {
+                                board.splice(r, 1); board.unshift(Array(COLS).fill(0)); score += 100;
+                            }
+                        }
+                        const rand = Math.floor(Math.random() * SHAPES.length);
+                        piece = { shape: SHAPES[rand], color: COLORS[rand], x: 3, y: 0 };
+                        if (collide(board, piece, {x:0, y:0})) board = Array(ROWS).fill(null).map(() => Array(COLS).fill(0));
+                    }
+                    dropCounter = 0;
+                }
+
+                scoreDisplay.innerText = `SCORE: ${score}`;
+                ctx.fillStyle = '#030509'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Grid lines background
+                ctx.strokeStyle = '#0d1527'; ctx.lineWidth = 1;
+                for(let x=0; x<canvas.width; x+=BLOCK) ctx.strokeRect(x, 0, BLOCK, canvas.height);
+
+                // Draw Board
+                board.forEach((row, r) => row.forEach((val, c) => {
+                    if (val) {
+                        ctx.fillStyle = val; ctx.shadowBlur = 8; ctx.shadowColor = val;
+                        ctx.fillRect(c * BLOCK + 1, r * BLOCK + 1, BLOCK - 2, BLOCK - 2);
+                    }
+                }));
+
+                // Draw Piece
+                piece.shape.forEach((row, r) => row.forEach((val, c) => {
+                    if (val) {
+                        ctx.fillStyle = piece.color; ctx.shadowBlur = 10; ctx.shadowColor = piece.color;
+                        ctx.fillRect((c + piece.x) * BLOCK + 1, (r + piece.y) * BLOCK + 1, BLOCK - 2, BLOCK - 2);
+                    }
+                }));
+                ctx.shadowBlur = 0;
+            }, 1000/60);
+        }
+
+        // 2. PAC-MAN (GLOW DOTS & ANIMATED PACMAN)
+        function runPacman() {
+            document.getElementById('gameTitle').innerText = "Pac-Man Neon";
+            let px = 180, py = 240, dx = 0, dy = 0, score = 0, mouthMouth = 0.2;
+            let dots = [];
+            for(let x=40; x<320; x+=40) for(let y=40; y<440; y+=40) dots.push({x, y, active: true});
+
+            currentInterval = setInterval(() => {
+                if (keys.left) { dx = -2; dy = 0; }
+                if (keys.right) { dx = 2; dy = 0; }
+                if (keys.up) { dx = 0; dy = -2; }
+                if (keys.down) { dx = 0; dy = 2; }
+
+                px = (px + dx + canvas.width) % canvas.width;
+                py = (py + dy + canvas.height) % canvas.height;
+
+                dots.forEach(d => {
+                    if (d.active && Math.hypot(d.x - px, d.y - py) < 14) { d.active = false; score += 10; }
+                });
+
+                scoreDisplay.innerText = `SCORE: ${score}`;
+                ctx.fillStyle = '#030509'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Glow Dots
+                ctx.fillStyle = '#ffcc00'; ctx.shadowBlur = 8; ctx.shadowColor = '#ffcc00';
+                dots.forEach(d => { if (d.active) { ctx.beginPath(); ctx.arc(d.x, d.y, 4, 0, Math.PI * 2); ctx.fill(); } });
+
+                // Neon Pac-Man
+                ctx.fillStyle = '#00f3ff'; ctx.shadowBlur = 12; ctx.shadowColor = '#00f3ff';
+                ctx.beginPath();
+                ctx.arc(px, py, 14, mouthMouth * Math.PI, (2 - mouthMouth) * Math.PI);
+                ctx.lineTo(px, py); ctx.fill();
+                ctx.shadowBlur = 0;
+            }, 1000/60);
+        }
+
+        // 3. 8-BALL POOL (REALISTIC MEJA & BAYANGAN)
+        function runPool() {
+            document.getElementById('gameTitle').innerText = "8-Ball Pool";
+            let cueBall = { x: 180, y: 360, vx: 0, vy: 0 };
+            let targetBall = { x: 180, y: 160, vx: 0, vy: 0 };
+            let isDragging = false, aimX = 0, aimY = 0, score = 0;
+
+            canvas.onmousedown = (e) => { isDragging = true; aimX = e.offsetX; aimY = e.offsetY; };
+            canvas.onmousemove = (e) => { if (isDragging) { aimX = e.offsetX; aimY = e.offsetY; } };
+            canvas.onmouseup = () => {
+                if (isDragging) {
+                    cueBall.vx = (cueBall.x - aimX) * 0.12; cueBall.vy = (cueBall.y - aimY) * 0.12;
+                    isDragging = false;
+                }
+            };
+
+            currentInterval = setInterval(() => {
+                cueBall.x += cueBall.vx; cueBall.y += cueBall.vy;
+                targetBall.x += targetBall.vx; targetBall.y += targetBall.vy;
+
+                cueBall.vx *= 0.98; cueBall.vy *= 0.98;
+                targetBall.vx *= 0.98; targetBall.vy *= 0.98;
+
+                if (cueBall.x < 20 || cueBall.x > canvas.width - 20) cueBall.vx *= -1;
+                if (cueBall.y < 20 || cueBall.y > canvas.height - 20) cueBall.vy *= -1;
+                if (targetBall.x < 20 || targetBall.x > canvas.width - 20) targetBall.vx *= -1;
+                if (targetBall.y < 20 || targetBall.y > canvas.height - 20) targetBall.vy *= -1;
+
+                if (Math.hypot(cueBall.x - targetBall.x, cueBall.y - targetBall.y) < 20) {
+                    targetBall.vx = cueBall.vx * 0.8; targetBall.vy = cueBall.vy * 0.8;
+                    cueBall.vx *= -0.5; cueBall.vy *= -0.5; score += 50;
+                }
+
+                scoreDisplay.innerText = `SCORE: ${score}`;
+                ctx.fillStyle = '#0a291a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Table Wood Border
+                ctx.strokeStyle = '#2d1810'; ctx.lineWidth = 16; ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+                // Cue Aiming Pointer
+                if (isDragging) {
+                    ctx.strokeStyle = 'rgba(0, 243, 255, 0.6)'; ctx.lineWidth = 2; ctx.setLineDash([5, 5]);
+                    ctx.beginPath(); ctx.moveTo(cueBall.x, cueBall.y); ctx.lineTo(aimX, aimY); ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+
+                // Cue Ball
+                ctx.fillStyle = '#ffffff'; ctx.shadowBlur = 6; ctx.shadowColor = '#ffffff';
+                ctx.beginPath(); ctx.arc(cueBall.x, cueBall.y, 10, 0, Math.PI * 2); ctx.fill();
+
+                // 8-Ball
+                ctx.fillStyle = '#050505'; ctx.shadowColor = '#000';
+                ctx.beginPath(); ctx.arc(targetBall.x, targetBall.y, 10, 0, Math.PI * 2); ctx.fill();
+                ctx.shadowBlur = 0;
+            }, 1000/60);
+        }
+
+        // 4. CYBER SNAKE
+        function runSnake() {
+            document.getElementById('gameTitle').innerText = "Cyber Snake";
+            let snake = [{x: 8, y: 8}];
+            let food = {x: 12, y: 12};
+            let dx = 1, dy = 0, score = 0;
+
+            currentInterval = setInterval(() => {
+                if (keys.left && dx === 0) { dx = -1; dy = 0; }
+                if (keys.right && dx === 0) { dx = 1; dy = 0; }
+                if (keys.up && dy === 0) { dx = 0; dy = -1; }
+                if (keys.down && dy === 0) { dx = 0; dy = 1; }
+
+                let head = { x: snake[0].x + dx, y: snake[0].y + dy };
+                if (head.x < 0 || head.x >= 18 || head.y < 0 || head.y >= 24) { snake = [{x:8, y:8}]; score = 0; }
+                snake.unshift(head);
+
+                if (head.x === food.x && head.y === food.y) {
+                    score += 10;
+                    food = { x: Math.floor(Math.random() * 18), y: Math.floor(Math.random() * 24) };
+                } else { snake.pop(); }
+
+                scoreDisplay.innerText = `SCORE: ${score}`;
+                ctx.fillStyle = '#030509'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Snake Food
+                ctx.fillStyle = '#ff0055'; ctx.shadowBlur = 10; ctx.shadowColor = '#ff0055';
+                ctx.fillRect(food.x * 20 + 2, food.y * 20 + 2, 16, 16);
+
+                // Snake Body
+                ctx.fillStyle = '#00ff66'; ctx.shadowColor = '#00ff66';
+                snake.forEach(s => ctx.fillRect(s.x * 20 + 1, s.y * 20 + 1, 18, 18));
+                ctx.shadowBlur = 0;
+            }, 100);
+        }
+
+        // 5. NEON PONG
+        function runPong() {
+            document.getElementById('gameTitle').innerText = "Neon Pong";
+            let p1Y = 200, p2Y = 200, bx = 180, by = 240, vx = 3, vy = 2, score = 0;
+
+            currentInterval = setInterval(() => {
+                if (keys.up && p1Y > 0) p1Y -= 5;
+                if (keys.down && p1Y < canvas.height - 70) p1Y += 5;
+
+                if (by > p2Y + 35) p2Y += 3;
+                if (by < p2Y + 35) p2Y -= 3;
+
+                bx += vx; by += vy;
+                if (by <= 0 || by >= canvas.height) vy *= -1;
+
+                if (bx <= 20 && by >= p1Y && by <= p1Y + 70) { vx *= -1.1; score += 10; }
+                if (bx >= canvas.width - 20 && by >= p2Y && by <= p2Y + 70) vx *= -1;
+
+                if (bx < 0 || bx > canvas.width) { bx = 180; by = 240; vx = 3; score = 0; }
+
+                scoreDisplay.innerText = `SCORE: ${score}`;
+                ctx.fillStyle = '#030509'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#00f3ff'; ctx.shadowBlur = 10; ctx.shadowColor = '#00f3ff';
+                ctx.fillRect(10, p1Y, 10, 70);
+
+                ctx.fillStyle = '#ff0055'; ctx.shadowColor = '#ff0055';
+                ctx.fillRect(canvas.width - 20, p2Y, 10, 70);
+
+                ctx.fillStyle = '#fff'; ctx.shadowColor = '#fff';
+                ctx.beginPath(); ctx.arc(bx, by, 6, 0, Math.PI * 2); ctx.fill();
+                ctx.shadowBlur = 0;
+            }, 1000/60);
+        }
+
+        // 6. CYBER BIRD
+        function runFlappy() {
+            document.getElementById('gameTitle').innerText = "Cyber Bird";
+            let birdY = 200, vy = 0, pipes = [], score = 0, frame = 0;
+
+            currentInterval = setInterval(() => {
+                frame++;
+                if (keys.actionA || keys.up) vy = -5;
+                vy += 0.35; birdY += vy;
+
+                if (frame % 90 === 0) {
+                    let gap = Math.random() * 200 + 100;
+                    pipes.push({ x: canvas.width, top: gap, bottom: gap + 130 });
+                }
+
+                pipes.forEach((p, i) => {
+                    p.x -= 2;
+                    if (p.x < 40 && p.x > 10 && (birdY < p.top || birdY > p.bottom)) { birdY = 200; vy = 0; pipes = []; score = 0; }
+                    if (p.x === 10) score++;
+                });
+
+                if (birdY > canvas.height || birdY < 0) { birdY = 200; vy = 0; pipes = []; score = 0; }
+
+                scoreDisplay.innerText = `SCORE: ${score}`;
+                ctx.fillStyle = '#030509'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#00ff66'; ctx.shadowBlur = 10; ctx.shadowColor = '#00ff66';
+                ctx.beginPath(); ctx.arc(40, birdY, 10, 0, Math.PI * 2); ctx.fill();
+
+                ctx.fillStyle = '#1e2942'; ctx.shadowColor = '#1e2942';
+                pipes.forEach(p => {
+                    ctx.fillRect(p.x, 0, 35, p.top);
+                    ctx.fillRect(p.x, p.bottom, 35, canvas.height - p.bottom);
+                });
+                ctx.shadowBlur = 0;
+            }, 1000/60);
+        }
+    </script>
+</body>
+  </html>
